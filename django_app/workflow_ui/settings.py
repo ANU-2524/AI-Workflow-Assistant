@@ -82,7 +82,7 @@ DATABASES = {
         "NAME": "workflow_db" , 
         "USER" : "anu" ,
         "PASSWORD" : "pass123" ,
-        "HOST" : "localhost" ,
+        "HOST" : "postgres" ,
         "PORT" : "5432" ,        
     }
 }

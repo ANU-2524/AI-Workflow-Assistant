@@ -1,0 +1,71 @@
+# docker/docker-compose.yml
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: anu
+      POSTGRES_PASSWORD: pass123
+      POSTGRES_DB: workflow_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: kafka_broker
+    environment:
+      CLUSTER_ID: 'tiRe8tjJRLKsmCwWcQuITA'
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:9092'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  # Django Service
+  django:
+    build:
+      context: ../django_app
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    volumes:
+      - ../django_app:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - kafka
+
+  # FastAPI Service
+  fastapi:
+    build:
+      context: ../fastapi_service
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "9000"]
+    volumes:
+      - ../fastapi_service:/app
+    ports:
+      - "9000:9000"
+    depends_on:
+      - postgres
+      - kafka
+
+volumes:
+  postgres_data:
+  kafka_data:

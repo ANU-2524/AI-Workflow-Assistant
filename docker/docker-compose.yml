@@ -8,6 +8,7 @@ services:
       POSTGRES_USER: anu
       POSTGRES_PASSWORD: pass123
       POSTGRES_DB: workflow_db
+      POSTGRES_HOST: postgres
     ports:
       - "5432:5432"
     volumes:
@@ -17,7 +18,7 @@ services:
     image: confluentinc/cp-kafka:7.6.1
     container_name: kafka_broker
     environment:
-      CLUSTER_ID: 'tiRe8tjJRLKsmCwWcQuITA'
+      CLUSTER_ID: NGYh4sYaTLOsdXi2hUYDwA
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: 'broker,controller'
       KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093'

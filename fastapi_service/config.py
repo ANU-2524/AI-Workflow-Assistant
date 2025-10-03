@@ -1,6 +1,6 @@
 DB_USER = "anu"
 DB_PASSWORD = "pass123"
-DB_HOST = "localhost"
+DB_HOST = "postgres"
 DB_PORT = "5432"
 DB_NAME = "workflow_db"
 

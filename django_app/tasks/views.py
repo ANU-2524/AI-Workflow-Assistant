@@ -1,15 +1,15 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.utils import timezone
 from .models import Task
 from .forms import TaskForm
+from .kafka_utils import send_task_to_kafka
+
 
 @login_required
 def dashboard(request):
-    """Main dashboard view showing tasks and schedules"""
-    # Get user's tasks
     tasks = Task.objects.filter(user=request.user)
     pending_tasks = tasks.filter(status='pending')
     completed_tasks = tasks.filter(status='completed')
@@ -44,11 +44,44 @@ def add_task(request):
             task = form.save(commit=False)
             task.user = request.user
             task.save()
+            print("Sending to Kafka -->")
+            send_task_to_kafka({
+                        "title": task.title,
+                        "description": task.description,
+                        "due_date": task.due_date.isoformat(),
+                        "priority": task.priority,
+                        "status": task.status,
+                        "is_completed": task.is_completed,
+                        "user": task.user.username,
+                        "created_at": task.created_at.isoformat(),
+                    })
+
             return redirect('dashboard')
     else:
         form = TaskForm()
     
     return render(request, 'tasks/add_task.html', {'form': form})
+
+@login_required
+def edit_task(request, task_id):
+    task = get_object_or_404(Task, pk=task_id, user=request.user)
+    if request.method == 'POST':
+        form = TaskForm(request.POST, instance=task)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+    else:
+        form = TaskForm(instance=task)
+    return render(request, 'tasks/edit_task.html', {'form': form})
+
+@login_required
+def delete_task(request, task_id):
+    task = get_object_or_404(Task, pk=task_id, user=request.user)
+    if request.method == 'POST':
+        task.delete()
+        return redirect('dashboard')
+    return render(request, 'tasks/confirm_delete.html', {'task': task})
+
 
 def signup_view(request):
     """User registration"""

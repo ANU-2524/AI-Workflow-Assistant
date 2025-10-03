@@ -74,9 +74,14 @@
                                                 <strong>{{ task.title }}</strong>
                                                 <small class="text-muted">Due: {{ task.due_date|date:"M d, Y H:i" }}</small>
                                             </div>
+                                            
                                             <span class="badge bg-{% if task.priority == 'high' %}danger{% elif task.priority == 'medium' %}warning{% else %}info{% endif %}">
                                                 {{ task.get_priority_display }}
                                             </span>
+                                            <div>
+                                                <a href="{% url 'edit_task' task.id %}" class="btn btn-outline-secondary btn-sm me-1">Edit</a>
+                                                <a href="{% url 'delete_task' task.id %}" class="btn btn-outline-danger btn-sm">Delete</a>
+                                            </div>
                                         </div>
                                     </div>
                                     {% endfor %}

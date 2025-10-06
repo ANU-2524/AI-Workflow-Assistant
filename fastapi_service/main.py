@@ -7,6 +7,7 @@ from datetime import datetime
 from google_auth_oauthlib.flow import Flow
 from fastapi import FastAPI, Depends, HTTPException, Request
 # from google_auth_oauthlib.flow import Flow
+from fastapi import Body
 from googleapiclient.discovery import build
 from fastapi.responses import RedirectResponse
 from models import EmailAuth
@@ -76,6 +77,17 @@ def update_task(task_id: int, task: TaskCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_task)
     return db_task
+
+@app.patch("/tasks/{task_id}")
+def patch_task(task_id: int, payload: dict = Body(...), db: Session = Depends(get_db)):
+    db_task = db.query(Task).get(task_id)
+    if not db_task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    for key, value in payload.items():
+        setattr(db_task, key, value)
+    db.commit()
+    db.refresh(db_task)
+    return {"ok": True}
 
 # DELETE (delete a task)
 @app.delete("/tasks/{task_id}")

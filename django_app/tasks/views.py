@@ -10,29 +10,29 @@ from .kafka_utils import send_task_to_kafka
 
 @login_required
 def dashboard(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
     tasks = Task.objects.filter(user=request.user)
-    pending_tasks = tasks.filter(status='pending')
-    completed_tasks = tasks.filter(status='completed')
+    pending_tasks = tasks.filter(status='pending', suggested=False)
+    completed_tasks = tasks.filter(is_completed=True)
     overdue_tasks = tasks.filter(due_date__lt=timezone.now(), is_completed=False)
-    
-    suggested_tasks =  Task.objects.filter(user=request.user, suggested=True)
-    upcoming_schedules = [
-        {'title': 'Team Meeting', 'time': '10:00 AM', 'date': 'Today'},
-        {'title': 'Project Review', 'time': '2:00 PM', 'date': 'Tomorrow'},
-        {'title': 'Client Call', 'time': '11:00 AM', 'date': 'Friday'},
-    ]
+
+    # Suggested tasks (from Gmail) that are waiting for user action
+    suggested_tasks = tasks.filter(suggested=True)
     context = {
         'tasks': tasks,
         'pending_tasks': pending_tasks,
         'completed_tasks': completed_tasks,
         'overdue_tasks': overdue_tasks,
-        'suggested_tasks': suggested_tasks, 
+        'suggested_tasks': suggested_tasks,  
         'total_tasks': tasks.count(),
         'pending_count': pending_tasks.count(),
         'completed_count': completed_tasks.count(),
         'overdue_count': overdue_tasks.count(),
     }
     return render(request, 'tasks/dashboard.html', context)
+
 
 @login_required
 def add_task(request):

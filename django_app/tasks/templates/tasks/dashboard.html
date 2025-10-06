@@ -56,21 +56,25 @@
     </div>
 
     <div class="row">
-        <!-- Tasks Section -->
+        <!-- Left: Main Tasks -->
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5>Your Tasks</h5>
-                    <a href="{% url 'add_task' %}" class="btn btn-primary btn-sm">Add Task</a>
-                    <a href="http://localhost:9000/gmail/start?user_id={{ user.id }}" class="btn btn-success btn-sm">Connect Gmail</a>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'add_task' %}" class="btn btn-primary btn-sm">Add Task</a>
+                        <a href="http://localhost:9000/gmail/start?user_id={{ user.id }}" class="btn btn-success btn-sm">Connect Gmail</a>
+                    </div>
                 </div>
+
                 <div class="card-body">
+                    <!-- Pending tasks (normal tasks only, not suggested) -->
                     {% if pending_tasks %}
                         <h6>Pending Tasks</h6>
                         {% for task in pending_tasks %}
                             <div class="card mb-2">
                                 <div class="card-body py-2">
-                                    <div class="d-flex justify-content-between">
+                                    <div class="d-flex justify-content-between align-items-center">
                                         <div>
                                             <strong>{{ task.title }}</strong>
                                             <small class="text-muted">Due: {{ task.due_date|date:"M d, Y H:i" }}</small>
@@ -78,7 +82,7 @@
                                         <span class="badge bg-{% if task.priority == 'high' %}danger{% elif task.priority == 'medium' %}warning{% else %}info{% endif %}">
                                             {{ task.get_priority_display }}
                                         </span>
-                                        <div>
+                                        <div class="ms-2">
                                             <a href="{% url 'edit_task' task.id %}" class="btn btn-outline-secondary btn-sm me-1">Edit</a>
                                             <a href="{% url 'delete_task' task.id %}" class="btn btn-outline-danger btn-sm">Delete</a>
                                         </div>
@@ -90,18 +94,18 @@
                         <p class="text-muted">No pending tasks. Great job ! HURRAYYYYYYYY...</p>
                     {% endif %}
 
-                    <!-- SUGGESTED TASKS SECTION GOES HERE -->
+                    <!-- Suggested Tasks from Email (accept/ignore here) -->
                     {% if suggested_tasks %}
-                        <h6 class="mt-3">📧 Suggested Tasks from Email</h6>
+                        <h6 class="mt-4">📧 Suggested Tasks from Email</h6>
                         {% for task in suggested_tasks %}
                             <div class="card mb-2 border-info">
                                 <div class="card-body py-2">
-                                    <div class="d-flex justify-content-between">
+                                    <div class="d-flex justify-content-between align-items-center">
                                         <div>
                                             <strong>{{ task.title }}</strong>
-                                            <small class="text-muted d-block">{{ task.description|truncatewords:15 }}</small>
+                                            <small class="text-muted d-block">{{ task.description|truncatewords:18 }}</small>
                                         </div>
-                                        <div>
+                                        <div class="ms-2">
                                             <button onclick="acceptTask({{ task.id }})" class="btn btn-success btn-sm me-1">✓ Accept</button>
                                             <button onclick="ignoreTask({{ task.id }})" class="btn btn-outline-danger btn-sm">✗ Ignore</button>
                                         </div>
@@ -110,13 +114,11 @@
                             </div>
                         {% endfor %}
                     {% endif %}
-                    <!-- END SUGGESTED TASKS SECTION -->
-
                 </div>
             </div>
         </div>
 
-        <!-- SUGGESTED TASKS SYNC PANEL -->
+        <!-- Right: Sync panel (status only) -->
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -142,16 +144,12 @@ function acceptTask(taskId) {
 }
 
 function ignoreTask(taskId) {
-    fetch(`http://localhost:9000/tasks/${taskId}`, {
-        method: 'DELETE'
-    })
+    fetch(`http://localhost:9000/tasks/${taskId}`, { method: 'DELETE' })
     .then(() => location.reload());
 }
 
 function suggestTasks() {
-    fetch('http://localhost:9000/gmail/suggest_tasks?user_id={{ user.id }}', {
-        method: 'POST'
-    })
+    fetch('http://localhost:9000/gmail/suggest_tasks?user_id={{ user.id }}', { method: 'POST' })
     .then(response => response.json())
     .then(data => {
         if (data.suggested_tasks && data.suggested_tasks.length > 0) {

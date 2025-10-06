@@ -3,3 +3,7 @@ uvicorn
 sqlalchemy
 psycopg2-binary
 kafka-python
+google_auth_oauthlib
+google-auth
+google-auth-httplib2
+google-api-python-client

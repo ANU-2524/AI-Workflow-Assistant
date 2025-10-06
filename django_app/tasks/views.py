@@ -15,24 +15,23 @@ def dashboard(request):
     completed_tasks = tasks.filter(status='completed')
     overdue_tasks = tasks.filter(due_date__lt=timezone.now(), is_completed=False)
     
-    # Dummy upcoming schedules for now
+    suggested_tasks =  Task.objects.filter(user=request.user, suggested=True)
     upcoming_schedules = [
         {'title': 'Team Meeting', 'time': '10:00 AM', 'date': 'Today'},
         {'title': 'Project Review', 'time': '2:00 PM', 'date': 'Tomorrow'},
         {'title': 'Client Call', 'time': '11:00 AM', 'date': 'Friday'},
     ]
-    
     context = {
+        'tasks': tasks,
         'pending_tasks': pending_tasks,
         'completed_tasks': completed_tasks,
         'overdue_tasks': overdue_tasks,
-        'upcoming_schedules': upcoming_schedules,
+        'suggested_tasks': suggested_tasks, 
         'total_tasks': tasks.count(),
-        'completed_count': completed_tasks.count(),
         'pending_count': pending_tasks.count(),
+        'completed_count': completed_tasks.count(),
         'overdue_count': overdue_tasks.count(),
     }
-    
     return render(request, 'tasks/dashboard.html', context)
 
 @login_required

@@ -24,6 +24,8 @@ class Task(models.Model):
     priority = models.CharField(max_length=10, choices=PRIORITY_CHOICES, default='medium')
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='pending')
     is_completed = models.BooleanField(default=False)
+    suggested = models.BooleanField(default=False)  
+
     
     class Meta:
         ordering = ['-created_at']

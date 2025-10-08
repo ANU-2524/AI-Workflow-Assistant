@@ -12,7 +12,7 @@
     <div class="container">
         <a class="navbar-brand" href="{% url 'dashboard' %}">AI Workflow Assistant</a>
         <div class="navbar-nav ms-auto">
-            <span class="navbar-text me-3">Welcome, {{ user.username }}</span>
+            <span class="navbar-text me-3">Welcome ~ {{ user.username }}</span>
             <a class="nav-link" href="{% url 'logout' %}">Logout</a>
         </div>
     </div>
@@ -43,6 +43,7 @@
                     <h5>Completed</h5>
                     <h3>{{ completed_count }}</h3>
                 </div>
+                
             </div>
         </div>
         <div class="col-md-3">
@@ -121,6 +122,9 @@
         <!-- Right: Sync panel (status only) -->
         <div class="col-md-4">
             <div class="card">
+                <div id="gmail-connected-alert" class="alert alert-success" style="display:none;" role="alert">
+  Gmail successfully connected!
+</div>
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5>Suggested Tasks from Email</h5>
                     <button onclick="suggestTasks()" class="btn btn-info btn-sm">Sync Email</button>
@@ -151,25 +155,46 @@ function ignoreTask(taskId) {
 function suggestTasks() {
     fetch('http://localhost:9000/gmail/suggest_tasks?user_id={{ user.id }}', { method: 'POST' })
     .then(response => response.json())
-    .then(data => {
-        if (data.suggested_tasks && data.suggested_tasks.length > 0) {
-            document.getElementById('suggested-tasks').innerHTML = `
-                <p class="text-success">Found ${data.suggested_tasks.length} suggested tasks!</p>
-                <ul>
-                    ${data.suggested_tasks.map(task => `<li>${task}</li>`).join('')}
-                </ul>
-                <p><em>Refresh the page to see them in your task list.</em></p>
-            `;
-        } else {
-            document.getElementById('suggested-tasks').innerHTML =
-                '<p class="text-info">No new suggested tasks found.</p>';
-        }
-    })
+.then(data => {
+    if (data.suggested_tasks && data.suggested_tasks.length > 0) {
+        document.getElementById('suggested-tasks').innerHTML = `
+            <p class="text-success">Found ${data.suggested_tasks.length} suggested tasks!</p>
+            <ul class="list-group">
+            ${data.suggested_tasks.map(task => `
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <b>${task.title}</b>
+                        <br>
+                        <small class="text-muted">${task.description || ''}</small>
+                    </div>
+                    <span>
+                        <button class="btn btn-success btn-sm me-1" onclick="acceptTask(${task.id})">✓ Accept</button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="ignoreTask(${task.id})">✗ Ignore</button>
+                    </span>
+                </li>
+            `).join('')}
+            </ul>
+        `;
+    } else {
+        document.getElementById('suggested-tasks').innerHTML =
+          '<p class="text-info">No new suggested tasks found.</p>';
+    }
+})
+
     .catch(error => {
         console.error('Error:', error);
         document.getElementById('suggested-tasks').innerHTML =
             '<p class="text-danger">Error syncing email. Check console.</p>';
     });
+}
+
+window.onload = function() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('gmail_connected') === '1') {
+        {% comment %} console.log("connectedd msgg !") {% endcomment %}
+        document.getElementById('gmail-connected-alert').style.display = 'block';
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
 }
 </script>
 </body>

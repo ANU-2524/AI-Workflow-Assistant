@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 Base = declarative_base()
 
-class Task(Base):
+class Task():
     __tablename__ = "tasks_task"
 
     id = Column(Integer, primary_key=True, index=True)

@@ -1,19 +1,33 @@
 from sqlalchemy.orm import Session
 from db import SessionLocal
-from models import Task
+# from models import Task
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
+# from datetime import datetime
 from google_auth_oauthlib.flow import Flow
 from fastapi import FastAPI, Depends, HTTPException, Request
 # from google_auth_oauthlib.flow import Flow
 from fastapi import Body
+from fastapi.responses import RedirectResponse
 from googleapiclient.discovery import build
 from fastapi.responses import RedirectResponse
 from models import EmailAuth
 from google.oauth2.credentials import Credentials
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+
+from sqlalchemy import create_engine, inspect
+from config import DATABASE_URL
+
+engine = create_engine(DATABASE_URL)
+inspector = inspect(engine)
+print("Tables seen by SQLAlchemy:", inspector.get_table_names())
+from sqlalchemy.ext.automap import automap_base
+
+AutomapBase = automap_base()
+AutomapBase.prepare(engine, reflect=True)
+Task = AutomapBase.classes.tasks_task
 
 CLIENT_SECRET_FILE = "creds/client_secret.json"
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
@@ -22,12 +36,11 @@ REDIRECT_URI = "http://localhost:9000/gmail/callback"
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8000", "http://127.0.0.1:8000"],  
+    allow_origins=["http://localhost:8000", "http://127.0.0.1:8000"],  # Add all frontend origins here!
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
-
 def get_db():
     db = SessionLocal()
     try:
@@ -58,13 +71,24 @@ def get_tasks(db: Session = Depends(get_db)):
     return tasks
 
 # POST (create a new task)
+
 @app.post("/tasks", response_model=TaskOut)
 def create_task(task: TaskCreate, db: Session = Depends(get_db)):
-    db_task = Task(**task.dict())
+    db_task = Task()  # automap class: no kwargs in constructor
+    # Set all fields from input
+    for key, value in task.dict().items():
+        setattr(db_task, key, value)
+    # Set the NOT NULL required fields for the Django schema
+    db_task.created_at = datetime.now()
+    db_task.updated_at = datetime.now()
+    # Example: if your table also needs user_id, set it here:
+    # db_task.user_id = user_id
     db.add(db_task)
     db.commit()
     db.refresh(db_task)
     return db_task
+
+
 
 # PUT (update a task)
 @app.put("/tasks/{task_id}", response_model=TaskOut)
@@ -150,7 +174,8 @@ def gmail_callback(request: Request, db: Session = Depends(get_db)):
     )
     db.add(auth_row)
     db.commit()
-    return {"message": "Gmail linked", "email": user_email, "user_id": user_id}
+    
+    return RedirectResponse(url="http://localhost:8000/?gmail_connected=1") 
 
 
 
@@ -243,15 +268,18 @@ def gmail_suggest_tasks(user_id: int, db: Session = Depends(get_db)):
                 print(f"CREATE: New suggested task")
                 try:
                     new_task = Task(
-                        user_id=user_id,
-                        title=subject if subject else "No Subject",
-                        description=snippet,
-                        due_date=datetime.now(),
-                        priority="medium",
-                        status="pending",
-                        is_completed=False,
-                        suggested=True
-                    )
+                            user_id=user_id,
+                            title=subject if subject else "No Subject",
+                            description=snippet,
+                            due_date=datetime.now(),
+                            priority="medium",
+                            status="pending",
+                            is_completed=False,
+                            suggested=True,
+                            # add these:
+                            created_at=datetime.now(),
+                            updated_at=datetime.now(),
+                        )
                     db.add(new_task)
                     created_tasks.append(subject)
                     print(f"SUCCESS: Added task '{subject}'")
@@ -267,4 +295,14 @@ def gmail_suggest_tasks(user_id: int, db: Session = Depends(get_db)):
         print(f"ERROR during commit: {e}")
     
     print(f"=== FINAL RESULT: {created_tasks} ===")
-    return {"suggested_tasks": created_tasks}
+    suggested_rows = db.query(Task).filter_by(user_id=user_id, suggested=True).all()
+    return {
+        "suggested_tasks": [
+            {
+                "id": t.id,
+                "title": t.title,
+                "description": t.description
+            }
+            for t in suggested_rows
+        ]
+    }

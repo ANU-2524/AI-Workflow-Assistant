@@ -4,4 +4,4 @@ DB_HOST = "postgres"
 DB_PORT = "5432"
 DB_NAME = "workflow_db"
 
-DATABASE_URL = f"postgresql+psycopg2://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+DATABASE_URL = "postgresql://anu:pass123@postgres:5432/workflow_db"

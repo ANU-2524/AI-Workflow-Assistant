@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<body>
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Chat Dashboard</h2>
+  <div class="row">
+    <!-- List all users except self -->
+    <div class="col-md-4">
+      <h5>People on AI Workflow Assistant</h5>
+      <ul class="list-group">
+        {% for user in users %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ user.username }}
+            <form action="{% url 'send_friend_request' user.id %}" method="post" style="display:inline;">
+              {% csrf_token %}
+              <button class="btn btn-outline-primary btn-sm">Send Request</button>
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <!-- Friend requests -->
+    <div class="col-md-4">
+      <h5>Connection Requests</h5>
+      <ul class="list-group">
+        {% for req in request.user.received_requests.all %}
+          {% if not req.is_accepted %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              From: {{ req.from_user.username }}
+              <form action="{% url 'accept_friend_request' req.id %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button class="btn btn-success btn-sm">Accept</button>
+              </form>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+    <!-- Friends list -->
+    <div class="col-md-4">
+      <h5>Your Friends</h5>
+      <ul class="list-group">
+        {% for friend in friends %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            {{ friend.username }}
+            <a class="btn btn-info btn-sm" href="{% url 'chat_with_user' friend.id %}">Open Chat</a>
+          </li>
+        {% endfor %}
+        {% if friends.count == 0 %}
+          <li class="list-group-item text-muted">No friends yet.</li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+</body>
+</html>

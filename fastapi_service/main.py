@@ -20,6 +20,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, inspect
 from config import DATABASE_URL
 from integrations import slack, zoom, docs
+import spacy
+nlp = spacy.load("en_core_web_sm")
 
 engine = create_engine(DATABASE_URL)
 inspector = inspect(engine)
@@ -49,12 +51,61 @@ def get_db():
     finally:
         db.close()
     
-@app.post("/api/agentic-command/")
+    
+def extract_chat_intent(cmd: str):
+    doc = nlp(cmd)
+    contact = None
+    message = ""
+    # Find proper noun (possible name) for contact
+    for ent in doc.ents:
+        if ent.label_ in ("PERSON", "ORG"):  # Org for group chats
+            contact = ent.text
+    # Heuristics for message (after "message" or ":" or "that" or after contact name)
+    # Examples: "Tell Aditi I'm busy", "Aditi, I am busy", "Message Aditi: busy"
+    if contact:
+        parts = cmd.split(contact)
+        if len(parts) > 1:
+            message = parts[1]
+        else:
+            # fallback, find after word 'message' or ':'
+            for pfx in ["message", "tell", ":"]:
+                if pfx in cmd:
+                    message = cmd.split(pfx,1)[-1]
+    return contact, message.strip()
+    
 async def agentic_command(req: Request):
     data = await req.json()
-    cmd = data.get("command", "EMPTY")
+    cmd = data.get("command", "").lower()
+    contact, message = extract_chat_intent(cmd)
+    if contact and message:
+        # Send message to your chat API!
+        requests.post(f"http://localhost:9000/chat/{contact}", json={"message": message})
+        return {
+          "feedback": f"Messaged {contact}: {message}",
+          "action": "chat",
+          "contact": contact,
+          "message": message
+        }
     print("HEARD:", cmd)
-    return {"feedback": f"ECHO: {cmd}"}
+    # Basic intent matching, extend as you wish!
+    if "youtube" in cmd:
+        return {"feedback": "Opening YouTube!", "action": "open", "url": "https://www.youtube.com"}
+    elif "google" in cmd:
+        return {"feedback": "Opening Google search!", "action": "open", "url": "https://www.google.com"}
+    elif "slack" in cmd:
+        return {"feedback": "Opening Slack!", "action": "open", "url": "https://slack.com/signin"}
+    elif "whatsapp" in cmd:
+        return {"feedback": "Opening WhatsApp Web!", "action": "open", "url": "https://web.whatsapp.com"}
+    elif "create google document" in cmd or  "open google document" in cmd or ("google document" in cmd and "create" in cmd):
+        return {"feedback": "Creating Google Doc!", "action": "open", "url": "https://docs.new"}
+    elif "zoom" in cmd:
+        return {"feedback": "Opening Zoom!", "action": "open", "url": "https://zoom.us"}
+    elif "linkedin" in cmd:
+        return {"feedback": "Opening LinkedIn!", "action": "open", "url": "https://linkedin.com"}
+    elif "github" in cmd:
+        return {"feedback": "Opening GitHub!", "action": "open", "url": "https://github.com"}
+    else:
+        return {"feedback": f"ECHO: {cmd}", "action": None, "url": None}
 
     
 class TaskBase(BaseModel):
@@ -316,3 +367,5 @@ def gmail_suggest_tasks(user_id: int, db: Session = Depends(get_db)):
             for t in suggested_rows
         ]
     }
+
+

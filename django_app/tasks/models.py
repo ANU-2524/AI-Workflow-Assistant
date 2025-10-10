@@ -36,3 +36,4 @@ class Task(models.Model):
     @property
     def is_overdue(self):
         return self.due_date < timezone.now() and not self.is_completed
+

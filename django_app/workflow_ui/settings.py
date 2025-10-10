@@ -38,7 +38,16 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "tasks" ,
+    "chat" ,
+    'channels',
 ]
+ASGI_APPLICATION = "workflow_ui.asgi.application"
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/login/'
@@ -58,7 +67,7 @@ ROOT_URLCONF = "workflow_ui.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        'DIRS': [os.path.join(BASE_DIR, 'workflow_ui', 'templates')],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

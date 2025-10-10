@@ -19,6 +19,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from sqlalchemy import create_engine, inspect
 from config import DATABASE_URL
+from integrations import slack, zoom, docs
 
 engine = create_engine(DATABASE_URL)
 inspector = inspect(engine)
@@ -47,7 +48,15 @@ def get_db():
         yield db
     finally:
         db.close()
-        
+    
+@app.post("/api/agentic-command/")
+async def agentic_command(req: Request):
+    data = await req.json()
+    cmd = data.get("command", "EMPTY")
+    print("HEARD:", cmd)
+    return {"feedback": f"ECHO: {cmd}"}
+
+    
 class TaskBase(BaseModel):
     title: str
     description: Optional[str] = ""
@@ -175,7 +184,8 @@ def gmail_callback(request: Request, db: Session = Depends(get_db)):
     db.add(auth_row)
     db.commit()
     
-    return RedirectResponse(url="http://localhost:8000/?gmail_connected=1") 
+    return RedirectResponse(url="http://localhost:8000/?gmail_connected=1")
+
 
 
 

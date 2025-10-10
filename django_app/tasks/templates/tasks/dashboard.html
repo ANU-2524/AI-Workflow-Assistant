@@ -36,15 +36,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card bg-success text-white">
-                <div class="card-body">
-                    <h5>Completed</h5>
-                    <h3>{{ completed_count }}</h3>
-                </div>
-                
-            </div>
-        </div>
+        <button class="btn btn-primary col-md-3" onclick="window.location.href='{% url 'speak_assistant' %}'">Speak Command</button>
         <div class="col-md-3">
             <div class="card bg-danger text-white">
                 <div class="card-body">
@@ -63,10 +55,17 @@
                     <h5>Your Tasks</h5>
                     <div class="d-flex gap-2">
                         <a href="{% url 'add_task' %}" class="btn btn-primary btn-sm">Add Task</a>
-                        <a href="http://localhost:9000/gmail/start?user_id={{ user.id }}" class="btn btn-success btn-sm">Connect Gmail</a>
+                        <a id="gmail-connect-btn" href="#" onclick="tryGmailConnect({{ user.id }})" class="btn btn-success btn-sm">Connect Gmail</a>
+
                     </div>
                 </div>
-
+                <!-- REQUEST ACCESS EXTRA UI -->
+                <div id="gmail-connect-error" style="display:none;">
+                  <div class="alert alert-warning mt-2">
+                    Having trouble connecting Gmail?<br>
+                    <button class="btn btn-outline-primary btn-sm mt-1" onclick="showAccessModal()">Request Access</button>
+                  </div>
+                </div>
                 <div class="card-body">
                     <h6>Pending Tasks</h6>
                     {% if pending_tasks %}
@@ -130,7 +129,79 @@
     </div>
 </div>
 
+<!-- ACCESS REQUEST MODAL -->
+<div id="request-access-modal" style="display:none;position:fixed;top:15%;left:0;width:100%;z-index:9999;background:rgba(0,0,0,0.15)">
+  <div style="max-width:400px;margin:30px auto;background:#fff;border-radius:12px;padding:1.5rem;">
+    <h5>Request Gmail Access</h5>
+    <form id="gmailAccessForm">
+      <input id="accessEmail" class="form-control mb-2" type="email" required placeholder="Enter your Gmail">
+      <input id="accessName" class="form-control mb-2" type="text" placeholder="Your Name (optional)">
+      <button class="btn btn-success mt-1" type="submit">Send Request</button>
+      <button type="button" class="btn btn-secondary mt-1" onclick="hideAccessModal()">Cancel</button>
+    </form>
+    <div id="accessStatus" class="text-success mt-2"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script>
+window.showAccessModal = function() {
+  document.getElementById('request-access-modal').style.display = 'block';
+  document.getElementById('accessStatus').innerText = '';
+}
+window.hideAccessModal = function() {
+  document.getElementById('request-access-modal').style.display = 'none';
+}
+
+
+emailjs.init('Ri5KWjNuRX1FghjUY'); // Your public key (starts with "Ri...")
+document.getElementById('gmailAccessForm').onsubmit = function(e) {
+  e.preventDefault();
+  emailjs.send('service_iqzqo4r', 'template_cubgn8p', {
+    from_email: document.getElementById('accessEmail').value,
+    from_name: document.getElementById('accessName').value
+  })
+  .then(function() {
+    document.getElementById('accessStatus').innerText =
+      "Request sent! You'll be notified when you're approved.";
+  }, function(error) {
+    document.getElementById('accessStatus').innerText = "Failed to send request!";
+    console.error(error);
+  });
+};
+
+  {% comment %} emailjs.init('Ri5KWjNuRX1FghjUY'); // <-- set your EmailJS user/public key
+
+function showAccessModal() {
+  document.getElementById('request-access-modal').style.display = 'block';
+  document.getElementById('accessStatus').innerText = '';
+}
+function hideAccessModal() {
+  document.getElementById('request-access-modal').style.display = 'none';
+}
+
+document.getElementById('gmailAccessForm').onsubmit = function(e) {
+  e.preventDefault();
+  emailjs.send('service_iqzqo4r', 'template_cubgn8p', {
+    from_email: document.getElementById('accessEmail').value,
+    from_name: document.getElementById('accessName').value,
+  })
+  .then(function() {
+    document.getElementById('accessStatus').innerText =
+      "Request sent! You'll be notified when you're approved.";
+  }, function() {
+    document.getElementById('accessStatus').innerText = "Failed to send request!";
+  });
+};  {% endcomment %}
+
+// ========== Gmail connect fail trigger ==========
+// Wherever Gmail OAuth fails in your logic, run:
+window.showGmailRequestAccess = function() {
+  document.getElementById('gmail-connect-error').style.display = 'block';
+};
+
+// ========== Rest of your JS ==========
+
 function acceptTask(taskId) {
     fetch(`http://localhost:9000/tasks/${taskId}`, {
         method: 'PATCH',
@@ -187,13 +258,39 @@ window.onload = function() {
     }
 }
 
-function markCompleted(taskId) {
+// Add this function wherever you handle Gmail connect fail (blocked user):
+//   showGmailRequestAccess();
+
+window.onload = function() {
+    // Check for gmail_connected parameter
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('gmail_connected') === '1') {
+        document.getElementById('gmail-connected-alert').style.display = 'block';
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
+    // FOR TESTING: Also show the request access (remove this after testing)
+    showGmailRequestAccess();
+};
+
+{% comment %} function markCompleted(taskId) {
     fetch(`http://localhost:9000/tasks/${taskId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ is_completed: true })
     })
     .then(() => location.reload());
+} {% endcomment %}
+window.onload = function() {
+  showGmailRequestAccess();
+}
+
+function tryGmailConnect(userId) {
+  window.open(`http://localhost:9000/gmail/start?user_id=${userId}`, "_blank");
+  setTimeout(function() {
+    // If Gmail window not connected, assume blocked (for hackathon/MVP only)
+    showGmailRequestAccess();
+  }, 3000); // or after detection of popup window closing/error
 }
 </script>
 </body>

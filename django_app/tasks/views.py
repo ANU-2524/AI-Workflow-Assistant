@@ -97,3 +97,9 @@ def signup_view(request):
         form = UserCreationForm()
     
     return render(request, 'registration/signup.html', {'form': form})
+
+
+def speak_assistant(request):
+    # Optionally pass actions list/context
+    actions = ["Open YouTube", "Search Google", "Send Slack Message", "Open WhatsApp Web", "Create Google Doc", "Schedule Zoom", "Summarize Emails", "...etc"]
+    return render(request, "tasks/speak_assistant.html", {"actions": actions})

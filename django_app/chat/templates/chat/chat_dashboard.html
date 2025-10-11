@@ -23,25 +23,23 @@
         }
 
         .navbar {
-            background: #ffffff !important;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-            padding: 1rem 0;
-            border-bottom: 1px solid #e2e8f0;
-            margin-bottom: 2rem;
-        }
-
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 1.25rem;
-            color: #ecedf1ff !important;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .navbar-brand i {
-            color: #3b82f6;
-        }
+    background: #ffffff !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    padding: 1rem 0;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 2rem;
+}
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #1e293b !important;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.navbar-brand i {
+    color: #3b82f6;
+}
 
         .page-header {
             margin-bottom: 2rem;
@@ -342,18 +340,344 @@
         }
     </style>
 </head>
-<body>
-{% extends 'base.html' %}
+<body>{% extends 'base.html' %}
 {% block content %}
 
-{% comment %} <nav class="navbar navbar-expand-lg">
-    <div class="container-fluid px-4">
-        <a class="navbar-brand" href="{% url 'dashboard' %}">
-            <i class="fas fa-robot"></i>
-            AI Workflow Assistant
-        </a>
-    </div>
-</nav> {% endcomment %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: #f8fafc;
+        color: #1e293b;
+        min-height: 100vh;
+    }
+
+    .navbar {
+        background: #ffffff !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        padding: 1rem 0;
+        border-bottom: 1px solid #e2e8f0;
+        margin-bottom: 2rem;
+    }
+
+    .page-header {
+        margin-bottom: 2rem;
+    }
+
+    .page-header h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #0f172a;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .page-header h2 i {
+        color: #8b5cf6;
+    }
+
+    .page-header p {
+        color: #64748b;
+        font-size: 0.938rem;
+        margin: 0;
+    }
+
+    .section-card {
+        background: #ffffff;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .section-header {
+        padding: 1.25rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .section-header h5 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #0f172a;
+        flex: 1;
+    }
+
+    .section-header i {
+        font-size: 1.25rem;
+    }
+
+    .section-header .badge {
+        background: #f1f5f9;
+        color: #64748b;
+        padding: 0.375rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.813rem;
+        font-weight: 600;
+    }
+
+    .people-section .section-header {
+        background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    }
+
+    .people-section .section-header i {
+        color: #0143abff;
+    }
+
+    .requests-section .section-header {
+        background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+    }
+
+    .requests-section .section-header i {
+        color: #8b5cf6;
+    }
+
+    .friends-section .section-header {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    }
+
+    .friends-section .section-header i {
+        color: #10b981;
+    }
+
+    .section-body {
+        padding: 0.75rem;
+        flex: 1;
+        overflow-y: auto;
+        max-height: 500px;
+    }
+
+    .user-item {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.2s;
+    }
+
+    .user-item:hover {
+        background: #ffffff;
+        border-color: #cbd5e1;
+        transform: translateX(3px);
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex: 1;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: #0f172a;
+        font-size: 0.938rem;
+    }
+
+    .user-status {
+        font-size: 0.75rem;
+        color: #64748b;
+    }
+
+    .btn-custom {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.813rem;
+        transition: all 0.2s;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+    }
+
+    .btn-send {
+        background: #3b82f6;
+        color: white;
+    }
+
+    .btn-send:hover {
+        background: #0a2388ff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(44, 44, 45, 0.3);
+    }
+
+    .btn-accept {
+        background: #8b5cf6;
+        color: white;
+    }
+
+    .btn-accept:hover {
+        background: #7c3aed;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+
+    .btn-chat {
+        background: #10b981;
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-chat:hover {
+        background: #059669;
+        color: white !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 2rem 1rem;
+    }
+
+    .empty-state i {
+        font-size: 2.5rem;
+        color: #cbd5e1;
+        margin-bottom: 0.75rem;
+    }
+
+    .empty-state p {
+        color: #64748b;
+        font-size: 0.875rem;
+        margin: 0;
+    }
+
+    .request-item {
+        background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+        border: 1px solid #e9d5ff;
+    }
+
+    .request-item:hover {
+        background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+        border-color: #d8b4fe;
+    }
+
+    .request-label {
+        font-size: 0.75rem;
+        color: #7c3aed;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.25rem;
+    }
+
+    .status-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #10b981;
+        border: 2px solid white;
+        position: absolute;
+        bottom: 2px;
+        right: 2px;
+    }
+
+    .avatar-wrapper {
+        position: relative;
+    }
+
+    /* Magic Mic Button Styles */
+    #magic-mic-btn {
+        position: fixed;
+        bottom: 36px;
+        right: 36px;
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        border: none;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-size: 2rem;
+        cursor: pointer;
+        z-index: 9999;
+        box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #magic-mic-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 12px 32px rgba(102, 126, 234, 0.6);
+    }
+
+    #magic-mic-btn:active {
+        transform: scale(0.95);
+    }
+
+    #magic-mic-btn.listening {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    .section-body::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .section-body::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 10px;
+    }
+
+    .section-body::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+
+    @media (max-width: 768px) {
+        .col-md-4 {
+            margin-bottom: 1.5rem;
+        }
+        .section-body {
+            max-height: 350px;
+        }
+        #magic-mic-btn {
+            width: 60px;
+            height: 60px;
+            bottom: 20px;
+            right: 20px;
+        }
+    }
+</style>
 
 <div class="container mt-4">
     <div class="page-header">
@@ -361,10 +685,9 @@
             <i class="fas fa-comments"></i>
             Team Collaboration
         </h2>
-
         <p>Connect with your team members and collaborate on tasks</p>
     </div>
-            {% comment %} <a href="#" class="back-btn" onclick="window.history.back(); return false;">← Back to Dashboard</a> {% endcomment %}
+
     <div class="row">
         <!-- People Section -->
         <div class="col-md-4">
@@ -490,6 +813,178 @@
         </div>
     </div>
 </div>
+
+<!-- Magic Mic Button -->
+<button id="magic-mic-btn" title="Click to speak">🎤</button>
+
+<script>
+// Store data from Django template
+window.voiceCommandData = {
+    csrfToken: "{{ csrf_token }}",
+    friends: [
+        {% for friend in friends %}
+        { 
+            username: "{{ friend.username|escapejs }}", 
+            id: {{ friend.id }},
+            chatUrl: "{% url 'chat_with_user' friend.id %}",
+            sendUrl: "{% url 'send_message' friend.id %}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ]
+};
+
+function findFriendByName(spokenText) {
+    const lower = spokenText.toLowerCase();
+    
+    // Exact match
+    for (const friend of window.voiceCommandData.friends) {
+        if (lower.includes(friend.username.toLowerCase())) {
+            return friend;
+        }
+    }
+    
+    // First letter match
+    for (const friend of window.voiceCommandData.friends) {
+        if (lower[0] === friend.username[0].toLowerCase()) {
+            return friend;
+        }
+    }
+    
+    return null;
+}
+
+function extractFriendAndMessage(spokenText) {
+    // Improved: find first known friend name loose match
+    let lower = spokenText.toLowerCase();
+    for (const friend of window.voiceCommandData.friends) {
+        let idx = lower.indexOf(friend.username.toLowerCase());
+        if (idx !== -1) {
+            // Message = everything after name, trimmed of extra words
+            let msg = spokenText.substring(idx + friend.username.length).trim();
+            return { name: friend.username, message: msg };
+        }
+    }
+    // fallback to old patterns if name not matched
+    const patterns = [
+        /(?:tell|ask|open|message|chat with|open chat with|say to)\s+([A-Za-z_0-9]+)/i,
+        /([A-Za-z_0-9]+)[,:\s]+(.+)/i
+    ];
+    for (const pattern of patterns) {
+        const match = spokenText.match(pattern);
+        if (match) {
+            const name = match[1];
+            const message = match[2] ? match[2].trim() : '';
+            return { name, message };
+        }
+    }
+    return { name: null, message: null };
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    const micBtn = document.getElementById('magic-mic-btn');
+    
+    if (!micBtn) {
+        console.error("Magic mic button not found!");
+        return;
+    }
+    
+    // Check if Speech Recognition is supported
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+        micBtn.style.display = 'none';
+        console.error("Speech Recognition not supported in this browser");
+        return;
+    }
+    
+    micBtn.addEventListener('click', function() {
+        console.log("Mic button clicked!");
+        
+        const recognition = new SpeechRecognition();
+        recognition.lang = "en-US";
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        
+        recognition.onstart = function() {
+            console.log("Speech recognition started");
+            micBtn.classList.add('listening');
+            micBtn.textContent = '🔴';
+        };
+        
+        recognition.onend = function() {
+            console.log("Speech recognition ended");
+            micBtn.classList.remove('listening');
+            micBtn.textContent = '🎤';
+        };
+        
+        recognition.onerror = function(event) {
+            console.error("Speech recognition error:", event.error);
+            alert("Microphone error: " + event.error + "\n\nPlease check:\n1. Microphone permissions\n2. Using HTTPS/localhost\n3. Browser compatibility (Chrome/Edge work best)");
+            micBtn.classList.remove('listening');
+            micBtn.textContent = '🎤';
+        };
+        
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            console.log("Heard:", transcript);
+            
+            // Parse the command
+            const { name, message } = extractFriendAndMessage(transcript);
+            const friend = name ? findFriendByName(name) : null;
+            
+            if (!friend) {
+                const errorMsg = "Sorry, " + (name || "that friend") + " is not in your connections";
+                alert(errorMsg);
+                if (window.speechSynthesis) {
+                    window.speechSynthesis.speak(new SpeechSynthesisUtterance(errorMsg));
+                }
+                return;
+            }
+            
+            console.log("Found friend:", friend.username);
+            
+            // Open chat in new tab
+            window.open(friend.chatUrl, "_blank");
+            
+            // Send message if provided
+            if (message && message.trim().length > 0) {
+                fetch(friend.sendUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": window.voiceCommandData.csrfToken
+                    },
+                    body: "message=" + encodeURIComponent(message)
+                })
+                .then(response => {
+                    console.log("Message sent successfully");
+                    const successMsg = "Messaged " + friend.username + ": " + message;
+                    if (window.speechSynthesis) {
+                        window.speechSynthesis.speak(new SpeechSynthesisUtterance(successMsg));
+                    }
+                })
+                .catch(error => {
+                    console.error("Error sending message:", error);
+                });
+            } else {
+                const openMsg = "Opened " + friend.username + "'s chat";
+                if (window.speechSynthesis) {
+                    window.speechSynthesis.speak(new SpeechSynthesisUtterance(openMsg));
+                }
+            }
+        };
+        
+        try {
+            recognition.start();
+        } catch (error) {
+            console.error("Error starting recognition:", error);
+            alert("Could not start microphone. Please check permissions.");
+        }
+    });
+    
+    console.log("Voice command system initialized with", window.voiceCommandData.friends.length, "friends");
+});
+</script>
 
 {% endblock %}
 </body>

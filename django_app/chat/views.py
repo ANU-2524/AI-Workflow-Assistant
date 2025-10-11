@@ -26,17 +26,17 @@ def chat_messages_api(request, user_id):
 
 @login_required
 def chat_dashboard(request):
-    # List all users except self
     users = User.objects.exclude(username=request.user.username)
-    # Get friends (accepted)
-    friends = User.objects.filter(
-        sent_requests__to_user=request.user, sent_requests__is_accepted=True
-    ) | User.objects.filter(
-        received_requests__from_user=request.user, received_requests__is_accepted=True
-    )
-    
+    friends = (
+        User.objects.filter(
+            sent_requests__to_user=request.user, sent_requests__is_accepted=True
+        ) | User.objects.filter(
+            received_requests__from_user=request.user, received_requests__is_accepted=True
+        )
+    ).distinct()
     users = users.exclude(id__in=friends.values_list('id', flat=True))
     return render(request, "chat/chat_dashboard.html", {"users": users, "friends": friends})
+
 
 @login_required
 @csrf_exempt

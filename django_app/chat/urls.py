@@ -10,5 +10,5 @@ urlpatterns = [
     path('<int:user_id>/send/', views.send_message, name='send_message'),
     path('<int:user_id>/clear/', views.clear_chat, name='clear_chat'),
     path('<int:user_id>/messages/', views.chat_messages_api, name='chat_messages_api'),
-
+    path('<int:user_id>/send/', views.send_message, name='send_message')
 ]

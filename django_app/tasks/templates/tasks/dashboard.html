@@ -503,9 +503,9 @@
             </a>
             <div class="navbar-nav ms-auto d-flex align-items-center gap-3">
                 <span class="navbar-text">
-                    Welcome <strong>{{ user.username }}</strong>
+                    Welcome ~ <strong>{{ user.username }}</strong>
                 </span>
-                <a class="btn-logout" href="{% url 'logout' %}">
+                <a class="btn-logout" href="{% url 'login' %}" id="logout-link">
                     <i class="fas fa-sign-out-alt me-1"></i>Logout
                 </a>
             </div>
@@ -800,6 +800,31 @@
                 showGmailRequestAccess();
             }, 3000);
         }
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    var logoutBtn = document.getElementById('logout-link');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+            e.preventDefault(); // Stop immediate navigation
+            var msg = "Thank you, Hope we meet again";
+            if ('speechSynthesis' in window) {
+                var utter = new window.SpeechSynthesisUtterance(msg);
+                utter.onend = function() {
+                    window.location.href = logoutBtn.href;
+                };
+                window.speechSynthesis.speak(utter);
+                // In case speech synthesis fails or user cancels, still redirect after ~2.5sec fail-safe:
+                setTimeout(function(){
+                    window.location.href = logoutBtn.href;
+                }, 3000);
+            } else {
+                alert(msg);
+                window.location.href = logoutBtn.href;
+            }
+        });
+    }
+});        
     </script>
 </body>
 </html>

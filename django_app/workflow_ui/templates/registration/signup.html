@@ -3,14 +3,377 @@
 <html>
 <head>
     <title>Sign Up</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        * {
+            margin: 50;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Left Panel - Promotional */
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: float 20s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(-50%, -50%); }
+            50% { transform: translate(-30%, -30%); }
+        }
+
+        .promo-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .promo-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .promo-icon i {
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .promo-content h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .promo-content p {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .promo-features {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .feature-item i {
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .feature-item span {
+            color: white;
+            font-size: 0.938rem;
+        }
+
+        .promo-footer {
+            margin-top: 2rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.938rem;
+        }
+
+        .promo-footer a {
+            color: white;
+            font-weight: 600;
+            text-decoration: none;
+            border-bottom: 2px solid white;
+        }
+
+        /* Right Panel - Form */
+        .right-panel {
+            flex: 1;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            overflow-y: auto;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .form-header h2 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: #64748b;
+            font-size: 0.938rem;
+        }
+
+        form p {
+            margin-bottom: 1.5rem;
+        }
+
+        form p label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        form p input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.938rem;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        form p input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+        .helptext {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-top: 0.375rem;
+            display: block;
+            line-height: 1.4;
+        }
+
+        form ul {
+            list-style: none;
+            padding: 0;
+            margin: 0.5rem 0 0 0;
+            font-size: 0.75rem;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        form ul li {
+            margin-bottom: 0.25rem;
+            padding-left: 0;
+        }
+
+        form ul li::before {
+            content: "• ";
+            color: #667eea;
+            font-weight: bold;
+            margin-right: 0.375rem;
+        }
+
+        .errorlist {
+            list-style: none;
+            padding: 0;
+            margin: 0.5rem 0 0 0;
+        }
+
+        .errorlist li {
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.813rem;
+            border: 1px solid #fecaca;
+            margin-bottom: 0.25rem;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .login-link p {
+            color: #64748b;
+            font-size: 0.938rem;
+            margin: 0;
+        }
+
+        .login-link a {
+            color: #667eea;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .login-link a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            body {
+                flex-direction: column;
+                overflow-y: auto;
+            }
+
+            .left-panel {
+                min-height: 40vh;
+                padding: 2rem;
+            }
+
+            .promo-content h2 {
+                font-size: 1.5rem;
+            }
+
+            .promo-features {
+                display: none;
+            }
+
+            .right-panel {
+                padding: 2rem 1.5rem;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-container {
+            animation: fadeIn 0.6s ease-out;
+        }
+    </style>
 </head>
 <body>
-    <h2>Sign Up</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Sign up</button>
-    </form>
-    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+    <!-- Left Panel -->
+    <div class="left-panel">
+        <div class="promo-content">
+            <div class="promo-icon">
+                <i class="fas fa-robot"></i>
+            </div>
+            <h2>Join AI Workflow Assistant!</h2>
+            <p>We're excited to have you here. Create your account to get access to exclusive features and smart task management.</p>
+            
+            <div class="promo-features">
+                <div class="feature-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Smart AI-powered task suggestions</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Gmail integration & auto-tasks</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Team collaboration & real-time chat</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Voice-powered assistance</span>
+                </div>
+            </div>
+
+            <div class="promo-footer">
+                Already have an account? <a href="{% url 'login' %}">Sign in</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="right-panel">
+        <div class="form-container">
+            <div class="form-header">
+                <h2>Create Account</h2>
+                <p>Fill in your details to get started</p>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">
+                    <i class="fas fa-rocket"></i> Create Account
+                </button>
+            </form>
+
+            <div class="login-link">
+                <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

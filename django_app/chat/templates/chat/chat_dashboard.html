@@ -5,62 +5,492 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: #ffffff !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            padding: 1rem 0;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 2rem;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: #ecedf1ff !important;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .navbar-brand i {
+            color: #3b82f6;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header h2 i {
+            color: #8b5cf6;
+        }
+
+        .page-header p {
+            color: #64748b;
+            font-size: 0.938rem;
+            margin: 0;
+        }
+
+        /* Card Sections */
+        .section-card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-header h5 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0f172a;
+            flex: 1;
+        }
+
+        .section-header i {
+            font-size: 1.25rem;
+        }
+
+        .section-header .badge {
+            background: #f1f5f9;
+            color: #64748b;
+            padding: 0.375rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.813rem;
+            font-weight: 600;
+        }
+
+        /* People Section - Blue Theme */
+        .people-section .section-header {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        }
+
+        .people-section .section-header i {
+            color: #0143abff;
+        }
+
+        /* Requests Section - Purple Theme */
+        .requests-section .section-header {
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+        }
+
+        .requests-section .section-header i {
+            color: #8b5cf6;
+        }
+
+        /* Friends Section - Green Theme */
+        .friends-section .section-header {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        }
+
+        .friends-section .section-header i {
+            color: #10b981;
+        }
+
+        .section-body {
+            padding: 0.75rem;
+            flex: 1;
+            overflow-y: auto;
+            max-height: 500px;
+        }
+
+        /* List Items */
+        .user-item {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+
+        .user-item:hover {
+            background: #ffffff;
+            border-color: #cbd5e1;
+            transform: translateX(3px);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #0f172a;
+            font-size: 0.938rem;
+        }
+
+        .user-status {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        /* Buttons */
+        .btn-custom {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.813rem;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .btn-send {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-send:hover {
+            background: #0a2388ff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(44, 44, 45, 0.3);
+        }
+
+        /* Accept Button - Purple (matches Connection Requests section) */
+        .btn-accept {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .btn-accept:hover {
+            background: #7c3aed;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+
+        .back-btn {
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            color: #4a5568;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        /* Chat Button - Green (matches Your Connections section) */
+        .btn-chat {
+            background: #10b981;
+            color: white;
+            text-decoration: none;
+        }
+
+        .btn-chat:hover {
+            background: #059669;
+            color: white !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        a.btn-chat:hover {
+            color: white !important;
+            text-decoration: none;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+            color: #cbd5e1;
+            margin-bottom: 0.75rem;
+        }
+
+        .empty-state p {
+            color: #64748b;
+            font-size: 0.875rem;
+            margin: 0;
+        }
+
+        /* Request Item Special Styling */
+        .request-item {
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+            border: 1px solid #e9d5ff;
+        }
+
+        .request-item:hover {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            border-color: #d8b4fe;
+        }
+
+        .request-label {
+            font-size: 0.75rem;
+            color: #7c3aed;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Online Status Indicator */
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #10b981;
+            border: 2px solid white;
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+        }
+
+        /* Scrollbar Styling */
+        .section-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .section-body::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+
+        .section-body::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .section-body::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        @media (max-width: 768px) {
+            .col-md-4 {
+                margin-bottom: 1.5rem;
+            }
+
+            .section-body {
+                max-height: 350px;
+            }
+        }
+    </style>
+</head>
 <body>
 {% extends 'base.html' %}
 {% block content %}
-<div class="container mt-4">
-  <h2>Chat Dashboard</h2>
-  <div class="row">
-    <!-- List all users except self -->
-    <div class="col-md-4">
-      <h5>People on AI Workflow Assistant</h5>
-      <ul class="list-group">
-        {% for user in users %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            {{ user.username }}
-            <form action="{% url 'send_friend_request' user.id %}" method="post" style="display:inline;">
-              {% csrf_token %}
-              <button class="btn btn-outline-primary btn-sm">Send Request</button>
-            </form>
-          </li>
-        {% endfor %}
-      </ul>
-    </div>
-    <!-- Friend requests -->
-    <div class="col-md-4">
-      <h5>Connection Requests</h5>
-      <ul class="list-group">
-        {% for req in request.user.received_requests.all %}
-          {% if not req.is_accepted %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-              From: {{ req.from_user.username }}
-              <form action="{% url 'accept_friend_request' req.id %}" method="post" style="display:inline;">
-                {% csrf_token %}
-                <button class="btn btn-success btn-sm">Accept</button>
-              </form>
-            </li>
-          {% endif %}
-        {% endfor %}
-      </ul>
-    </div>
-    <!-- Friends list -->
-    <div class="col-md-4">
-      <h5>Your Friends</h5>
-      <ul class="list-group">
-        {% for friend in friends %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            {{ friend.username }}
-            <a class="btn btn-info btn-sm" href="{% url 'chat_with_user' friend.id %}">Open Chat</a>
-          </li>
-        {% endfor %}
-        {% if friends.count == 0 %}
-          <li class="list-group-item text-muted">No friends yet.</li>
-        {% endif %}
-      </ul>
-    </div>
-  </div>
-</div>
-{% endblock %}
 
+{% comment %} <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand" href="{% url 'dashboard' %}">
+            <i class="fas fa-robot"></i>
+            AI Workflow Assistant
+        </a>
+    </div>
+</nav> {% endcomment %}
+
+<div class="container mt-4">
+    <div class="page-header">
+        <h2>
+            <i class="fas fa-comments"></i>
+            Team Collaboration
+        </h2>
+
+        <p>Connect with your team members and collaborate on tasks</p>
+    </div>
+            {% comment %} <a href="#" class="back-btn" onclick="window.history.back(); return false;">← Back to Dashboard</a> {% endcomment %}
+    <div class="row">
+        <!-- People Section -->
+        <div class="col-md-4">
+            <div class="section-card people-section">
+                <div class="section-header">
+                    <i class="fas fa-users"></i>
+                    <h5>Team Members</h5>
+                    <span class="badge">{{ users|length }}</span>
+                </div>
+                <div class="section-body">
+                    {% for user in users %}
+                    <div class="user-item">
+                        <div class="user-info">
+                            <div class="avatar-wrapper">
+                                <div class="user-avatar">
+                                    {{ user.username|first|upper }}
+                                </div>
+                                <div class="status-indicator"></div>
+                            </div>
+                            <div>
+                                <div class="user-name">{{ user.username }}</div>
+                                <div class="user-status">Available</div>
+                            </div>
+                        </div>
+                        <form action="{% url 'send_friend_request' user.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button class="btn-custom btn-send">
+                                <i class="fas fa-user-plus"></i>
+                                Connect
+                            </button>
+                        </form>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state">
+                        <i class="fas fa-users-slash"></i>
+                        <p>No team members available</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Requests Section -->
+        <div class="col-md-4">
+            <div class="section-card requests-section">
+                <div class="section-header">
+                    <i class="fas fa-bell"></i>
+                    <h5>Connection Requests</h5>
+                    <span class="badge">
+                        {{ request.user.received_requests.all|length }}
+                    </span>
+                </div>
+                <div class="section-body">
+                    {% for req in request.user.received_requests.all %}
+                    {% if not req.is_accepted %}
+                    <div class="user-item request-item">
+                        <div class="user-info">
+                            <div class="avatar-wrapper">
+                                <div class="user-avatar">
+                                    {{ req.from_user.username|first|upper }}
+                                </div>
+                            </div>
+                            <div>
+                                <div class="request-label">New Request</div>
+                                <div class="user-name">{{ req.from_user.username }}</div>
+                            </div>
+                        </div>
+                        <form action="{% url 'accept_friend_request' req.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button class="btn-custom btn-accept">
+                                <i class="fas fa-check"></i>
+                                Accept
+                            </button>
+                        </form>
+                    </div>
+                    {% endif %}
+                    {% empty %}
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>No pending requests</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Friends Section -->
+        <div class="col-md-4">
+            <div class="section-card friends-section">
+                <div class="section-header">
+                    <i class="fas fa-user-friends"></i>
+                    <h5>Your Connections</h5>
+                    <span class="badge">{{ friends.count }}</span>
+                </div>
+                <div class="section-body">
+                    {% for friend in friends %}
+                    <div class="user-item">
+                        <div class="user-info">
+                            <div class="avatar-wrapper">
+                                <div class="user-avatar">
+                                    {{ friend.username|first|upper }}
+                                </div>
+                                <div class="status-indicator"></div>
+                            </div>
+                            <div>
+                                <div class="user-name">{{ friend.username }}</div>
+                                <div class="user-status">Connected</div>
+                            </div>
+                        </div>
+                        <a class="btn-custom btn-chat" href="{% url 'chat_with_user' friend.id %}">
+                            <i class="fas fa-comment-dots"></i>
+                            Chat
+                        </a>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state">
+                        <i class="fas fa-user-plus"></i>
+                        <p>No connections yet. Start connecting with team members!</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
 </body>
 </html>

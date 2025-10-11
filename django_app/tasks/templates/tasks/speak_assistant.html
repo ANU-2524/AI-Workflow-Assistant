@@ -2,63 +2,450 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Speak Assistant</title>
+    <title>Speak Assistant - AI Workflow Assistant</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 1;
+            padding: 1;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            min-height: 90vh;
+        }
+
+        /* Header matching your dashboard */
+        .top-header {
+            background: white;
+            padding: 1.2rem 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .logo-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1a202c;
+        }
+
+        .back-btn {
+            background: white;
+            border: 1px solid #e2e8f0;
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            color: #4a5568;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .back-btn:hover {
+            background: #91a8b8ff;
+            border-color: #cbd5e0;
+            color: #2d3748;
+        }
+
+        .container {
+            max-width: 1200px;
+            padding: 0 2rem;
+        }
+
+        /* Main content area */
+        .speak-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-subtitle {
+            color: #718096;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        /* Microphone button */
+        .mic-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            {% comment %} margin: 3rem 0; {% endcomment %}
+        }
+
+        .mic-button {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            position: relative;
+        }
+
+        .mic-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .mic-button:active {
+            transform: scale(0.98);
+        }
+
+        .mic-button svg {
+            width: 50px;
+            height: 50px;
+            fill: white;
+        }
+
+        .mic-status {
+            margin-top: 1.5rem;
+            font-size: 1.1rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .mic-button.listening {
+            animation: pulse-ring 1.5s ease-out infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 30px rgba(102, 126, 234, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+            }
+        }
+
+        /* Command suggestions */
+        .commands-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+
+        .commands-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .command-card {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1rem 1.2rem;
+            transition: all 0.2s;
+            cursor: default;
+        }
+
+        .command-card:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        .command-text {
+            color: #2d3748;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .command-icon {
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+
+        /* Response cards */
+        .response-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .response-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.8rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .response-header {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+        }
+
+        .response-content {
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            min-height: 100px;
+            color: #2d3748;
+            font-size: 1rem;
+            line-height: 1.6;
+            border-left: 3px solid #e2e8f0;
+        }
+
+        .response-content.active {
+            border-left-color: #667eea;
+            background: #eef2ff;
+        }
+
+        .response-content.success {
+            border-left-color: #48bb78;
+            background: #f0fff4;
+        }
+
+        .response-content:empty::before {
+            content: 'Waiting for input...';
+            color: #a0aec0;
+            font-style: italic;
+        }
+
+        /* Loading animation */
+        .loading-dots {
+            display: inline-flex;
+            gap: 4px;
+        }
+
+        .loading-dots span {
+            width: 6px;
+            height: 6px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .response-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .commands-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .mic-button {
+                width: 100px;
+                height: 100px;
+            }
+
+            .mic-button svg {
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
 </head>
 <body>
-<div class="container mt-5">
-  <h2 class="mb-3"> Welcome to Your AI Speak Assistant</h2>
-  <p class="lead">Try speaking one of these…</p>
-  <ul class="list-group mb-4">
-    {% for action in actions %}
-      <li class="list-group-item">{{ action }}</li>
-    {% endfor %}
-  </ul>
-  <button class="btn btn-success btn-lg" onclick="startListening()">Speak Now</button>
-  <button class="btn btn-success btn-lg" onclick="window.location.href='{% url 'dashboard' %}'">Go Back</button>
-  <div class="mt-4">
-    <h5>What you said:</h5>
-    <div id="spoken-text" class="text-primary mb-2" style="font-weight: bold;"></div>
-    <h5>Assistant Response:</h5>
-    <div id="assistant-result" class="text-success"></div>
-  </div>
-</div>
+    <!-- Header -->
+    <div class="top-header">
+        <div class="logo-section">
+            <div class="logo-icon">🤖</div>
+            <span class="logo-text">AI Workflow Assistant - Voice Control</span>
+        </div>
+        <a href="#" class="back-btn" onclick="window.history.back(); return false;">← Back to Dashboard</a>
+    </div>
 
-<script>
-function startListening() {
-    alert("Mic is starting!");
-    const rec = new(window.SpeechRecognition||window.webkitSpeechRecognition)();
-    rec.lang = "en-US";
-    rec.onerror = function(e) { 
-      alert("SpeechRecognition error: " + e.error); 
-      console.error("Speech error:", e);
+    <div class="container">
+        <!-- Main speak section -->
+        <div class="speak-section">
+            <h1 class="section-title">Voice Assistant</h1>
+            <p class="section-subtitle">Click the microphone and speak your command</p>
+            
+            <div class="mic-container">
+                <button class="mic-button" id="micButton" onclick="startListening()">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+                        <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+                    </svg>
+                </button>
+                <div class="mic-status" id="micStatus">Ready to listen</div>
+            </div>
+        </div>
+
+        <!-- Command suggestions -->
+        <div class="commands-section">
+            <div class="commands-title">
+                <span>💡</span>
+                <span>Try these voice commands</span>
+            </div>
+            <div class="commands-grid">
+                {% for action in actions %}
+                <div class="command-card">
+                    <div class="command-text">
+                        <span class="command-icon">→</span>
+                        <span>{{ action }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Response section -->
+        <div class="response-container">
+            <div class="response-card">
+                <div class="response-header">What You Said</div>
+                <div class="response-content" id="spoken-text"></div>
+            </div>
+            <div class="response-card">
+                <div class="response-header">Assistant Response</div>
+                <div class="response-content" id="assistant-result"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function startListening() {
+        const micButton = document.getElementById('micButton');
+        const micStatus = document.getElementById('micStatus');
+        const spokenText = document.getElementById('spoken-text');
+        const assistantResult = document.getElementById('assistant-result');
+        
+        // Clear previous content
+        spokenText.innerText = "";
+        spokenText.classList.remove('active', 'success');
+        assistantResult.innerText = "";
+        assistantResult.classList.remove('success');
+        
+        // Update UI for listening state
+        micButton.classList.add('listening');
+        micStatus.innerText = "Listening...";
+        
+        const rec = new(window.SpeechRecognition || window.webkitSpeechRecognition)();
+        rec.lang = "en-US";
+        
+        rec.onerror = function(e) { 
+            micButton.classList.remove('listening');
+            micStatus.innerText = "Ready to listen";
+            spokenText.innerText = "Error: " + e.error;
+            spokenText.classList.add('active');
+            console.error("Speech error:", e);
+        }
+        
+        rec.onaudiostart = function() { 
+            console.log('Audio capturing started');
+        }
+        
+        rec.onaudioend = function() { 
+            console.log('Audio capturing ended');
+        }
+        
+        rec.onend = function() { 
+            micButton.classList.remove('listening');
+            micStatus.innerText = "Ready to listen";
+            console.log('Recognition ended');
+        }
+        
+        rec.onstart = function() { 
+            console.log('Recognition started');
+        }
+        
+        rec.onresult = function(e) {
+            console.log('Speech result event:', e);
+            const cmd = e.results[0][0].transcript;
+            
+            spokenText.innerText = cmd;
+            spokenText.classList.add('active');
+            
+            assistantResult.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div> Processing...';
+            
+            fetch("http://localhost:9000/api/agentic-command/", {
+                method: "POST",
+                body: JSON.stringify({command: cmd}),
+                headers: {"Content-Type": "application/json"}
+            })
+            .then(r => r.json())
+            .then(data => {
+                assistantResult.innerText = data.feedback;
+                assistantResult.classList.add('success');
+                
+                // Speak the assistant's reply
+                if(window.speechSynthesis) {
+                    let utter = new SpeechSynthesisUtterance(data.feedback || "Sorry, I have no response.");
+                    utter.rate = 1.06;
+                    utter.pitch = 1.06;
+                    utter.lang = "en-US";
+                    window.speechSynthesis.speak(utter);
+                }
+                
+                if(data.action == "open" && data.url) {
+                    window.open(data.url, "_blank");
+                }
+            })
+            .catch(err => {
+                assistantResult.innerText = "Failed to connect to assistant. Please try again.";
+                console.error(err);
+            });
+        };
+        
+        rec.start();
     }
-    rec.onaudiostart = function() { console.log('Audio capturing started'); }
-    rec.onaudioend = function() { console.log('Audio capturing ended'); }
-    rec.onend = function() { console.log('Recognition ended'); }
-    rec.onstart = function() { console.log('Recognition started'); }
-    rec.onresult = function(e) {
-        console.log('Speech result event:', e);
-        const cmd = e.results[0][0].transcript;
-        document.getElementById('spoken-text').innerText = cmd; // Show exactly what was said
-        fetch("http://localhost:9000/api/agentic-command/", {
-            method:"POST",
-            body:JSON.stringify({command:cmd}),
-            headers:{"Content-Type":"application/json"}
-        })
-        .then(r=>r.json())
-        .then(data=>{
-            document.getElementById('assistant-result').innerText = data.feedback;
-            if(data.action=="open" && data.url){
-                window.open(data.url,"_blank");
-            }
-        });
-    };
-    document.getElementById('spoken-text').innerText = ""; // Clear previous text
-    document.getElementById('assistant-result').innerText = ""; // Clear previous result
-    rec.start();
-}
-
-</script>
+    </script>
 </body>
 </html>

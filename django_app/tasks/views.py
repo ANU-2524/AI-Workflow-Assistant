@@ -108,7 +108,8 @@ def speak_assistant(request):
         "Create Google Doc",
         "Open Zoom",
         "Open GitHub" , 
-        "Open LinkedIn"
+        "Open LinkedIn",
+        "adding more..."
     ]
     return render(request, 'tasks/speak_assistant.html', {"actions": actions})
 

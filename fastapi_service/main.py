@@ -73,6 +73,7 @@ def extract_chat_intent(cmd: str):
                     message = cmd.split(pfx,1)[-1]
     return contact, message.strip()
     
+@app.post("/api/agentic-command/")    
 async def agentic_command(req: Request):
     data = await req.json()
     cmd = data.get("command", "").lower()

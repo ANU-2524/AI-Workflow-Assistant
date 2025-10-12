@@ -1,3 +1,6 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,365 +9,18 @@
     <title>Chat Dashboard</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #f8fafc;
-            color: #1e293b;
-            min-height: 100vh;
-        }
-
-        .navbar {
-    background: #ffffff !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    padding: 1rem 0;
-    border-bottom: 1px solid #e2e8f0;
-    margin-bottom: 2rem;
-}
-.navbar-brand {
-    font-weight: 700;
-    font-size: 1.25rem;
-    color: #1e293b !important;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-.navbar-brand i {
-    color: #3b82f6;
-}
-
-        .page-header {
-            margin-bottom: 2rem;
-        }
-
-        .page-header h2 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: #0f172a;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .page-header h2 i {
-            color: #8b5cf6;
-        }
-
-        .page-header p {
-            color: #64748b;
-            font-size: 0.938rem;
-            margin: 0;
-        }
-
-        /* Card Sections */
-        .section-card {
-            background: #ffffff;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .section-header {
-            padding: 1.25rem;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .section-header h5 {
-            margin: 0;
-            font-size: 1rem;
-            font-weight: 700;
-            color: #0f172a;
-            flex: 1;
-        }
-
-        .section-header i {
-            font-size: 1.25rem;
-        }
-
-        .section-header .badge {
-            background: #f1f5f9;
-            color: #64748b;
-            padding: 0.375rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.813rem;
-            font-weight: 600;
-        }
-
-        /* People Section - Blue Theme */
-        .people-section .section-header {
-            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-        }
-
-        .people-section .section-header i {
-            color: #0143abff;
-        }
-
-        /* Requests Section - Purple Theme */
-        .requests-section .section-header {
-            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
-        }
-
-        .requests-section .section-header i {
-            color: #8b5cf6;
-        }
-
-        /* Friends Section - Green Theme */
-        .friends-section .section-header {
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-        }
-
-        .friends-section .section-header i {
-            color: #10b981;
-        }
-
-        .section-body {
-            padding: 0.75rem;
-            flex: 1;
-            overflow-y: auto;
-            max-height: 500px;
-        }
-
-        /* List Items */
-        .user-item {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: all 0.2s;
-        }
-
-        .user-item:hover {
-            background: #ffffff;
-            border-color: #cbd5e1;
-            transform: translateX(3px);
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            flex: 1;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 700;
-            font-size: 1rem;
-        }
-
-        .user-name {
-            font-weight: 600;
-            color: #0f172a;
-            font-size: 0.938rem;
-        }
-
-        .user-status {
-            font-size: 0.75rem;
-            color: #64748b;
-        }
-
-        /* Buttons */
-        .btn-custom {
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.813rem;
-            transition: all 0.2s;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.375rem;
-        }
-
-        .btn-send {
-            background: #3b82f6;
-            color: white;
-        }
-
-        .btn-send:hover {
-            background: #0a2388ff;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(44, 44, 45, 0.3);
-        }
-
-        /* Accept Button - Purple (matches Connection Requests section) */
-        .btn-accept {
-            background: #8b5cf6;
-            color: white;
-        }
-
-        .btn-accept:hover {
-            background: #7c3aed;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-        }
-
-        .back-btn {
-            background: white;
-            border: 1px solid #e2e8f0;
-            padding: 0.5rem 1.5rem;
-            border-radius: 6px;
-            color: #4a5568;
-            text-decoration: none;
-            transition: all 0.2s;
-            font-weight: 500;
-        }
-
-        /* Chat Button - Green (matches Your Connections section) */
-        .btn-chat {
-            background: #10b981;
-            color: white;
-            text-decoration: none;
-        }
-
-        .btn-chat:hover {
-            background: #059669;
-            color: white !important;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        }
-
-        a.btn-chat:hover {
-            color: white !important;
-            text-decoration: none;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 2rem 1rem;
-        }
-
-        .empty-state i {
-            font-size: 2.5rem;
-            color: #cbd5e1;
-            margin-bottom: 0.75rem;
-        }
-
-        .empty-state p {
-            color: #64748b;
-            font-size: 0.875rem;
-            margin: 0;
-        }
-
-        /* Request Item Special Styling */
-        .request-item {
-            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
-            border: 1px solid #e9d5ff;
-        }
-
-        .request-item:hover {
-            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
-            border-color: #d8b4fe;
-        }
-
-        .request-label {
-            font-size: 0.75rem;
-            color: #7c3aed;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.25rem;
-        }
-
-        /* Online Status Indicator */
-        .status-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #10b981;
-            border: 2px solid white;
-            position: absolute;
-            bottom: 2px;
-            right: 2px;
-        }
-
-        .avatar-wrapper {
-            position: relative;
-        }
-
-        /* Scrollbar Styling */
-        .section-body::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .section-body::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 10px;
-        }
-
-        .section-body::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-
-        .section-body::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-
-        @media (max-width: 768px) {
-            .col-md-4 {
-                margin-bottom: 1.5rem;
-            }
-
-            .section-body {
-                max-height: 350px;
-            }
-        }
-    </style>
-</head>
-<body>{% extends 'base.html' %}
-{% block content %}
-
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+    /* Reset default container padding since navbar handles spacing */
+    .container {
+        padding-top: 1.5rem !important;
     }
 
     body {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         background: #f8fafc;
         color: #1e293b;
-        min-height: 100vh;
-    }
-
-    .navbar {
-        background: #ffffff !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-        padding: 1rem 0;
-        border-bottom: 1px solid #e2e8f0;
-        margin-bottom: 2rem;
     }
 
     .page-header {
@@ -391,6 +47,7 @@
         margin: 0;
     }
 
+    /* Card Sections */
     .section-card {
         background: #ffffff;
         border-radius: 12px;
@@ -431,14 +88,16 @@
         font-weight: 600;
     }
 
+    /* People Section - Blue Theme */
     .people-section .section-header {
         background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
     }
 
     .people-section .section-header i {
-        color: #0143abff;
+        color: #3b82f6;
     }
 
+    /* Requests Section - Purple Theme */
     .requests-section .section-header {
         background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
     }
@@ -447,6 +106,7 @@
         color: #8b5cf6;
     }
 
+    /* Friends Section - Green Theme */
     .friends-section .section-header {
         background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
     }
@@ -462,6 +122,7 @@
         max-height: 500px;
     }
 
+    /* List Items */
     .user-item {
         background: #f8fafc;
         border: 1px solid #e2e8f0;
@@ -511,6 +172,7 @@
         color: #64748b;
     }
 
+    /* Buttons */
     .btn-custom {
         padding: 0.5rem 1rem;
         border-radius: 8px;
@@ -529,11 +191,12 @@
     }
 
     .btn-send:hover {
-        background: #0a2388ff;
+        background: #2563eb;
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(44, 44, 45, 0.3);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
     }
 
+    /* Accept Button - Purple */
     .btn-accept {
         background: #8b5cf6;
         color: white;
@@ -545,6 +208,7 @@
         box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
     }
 
+    /* Chat Button - Green */
     .btn-chat {
         background: #10b981;
         color: white;
@@ -556,8 +220,10 @@
         color: white !important;
         transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        text-decoration: none;
     }
 
+    /* Empty State */
     .empty-state {
         text-align: center;
         padding: 2rem 1rem;
@@ -575,6 +241,7 @@
         margin: 0;
     }
 
+    /* Request Item Special Styling */
     .request-item {
         background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
         border: 1px solid #e9d5ff;
@@ -594,6 +261,7 @@
         margin-bottom: 0.25rem;
     }
 
+    /* Online Status Indicator */
     .status-indicator {
         width: 10px;
         height: 10px;
@@ -609,7 +277,74 @@
         position: relative;
     }
 
-    /* Magic Mic Button Styles */
+    /* AI Tooltip Styles */
+    .ai-mic-tooltip {
+        display: none;
+        position: fixed;
+        right: 94px;
+        bottom: 92px;
+        z-index: 9999;
+        pointer-events: none;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .tooltip-robot img {
+        height: 48px;
+        width: auto;
+        margin-bottom: -16px;
+        margin-left: 12px;
+        filter: drop-shadow(0 4px 10px rgba(60, 80, 160, 0.09));
+        animation: bounceybot 1.3s infinite alternate;
+    }
+
+    @keyframes bounceybot {
+        from { transform: translateY(-8px); }
+        to { transform: translateY(0); }
+    }
+
+    .tooltip-bubble {
+        background: linear-gradient(120deg, #f5f7ff 80%, #e0e7ff 100%);
+        border-radius: 25px 25px 25px 40px;
+        color: #23235b;
+        border: 1.5px solid #a5b4fc;
+        box-shadow: 0 6px 30px rgba(76, 70, 200, 0.13), 0 1.5px 4px rgba(109, 40, 217, 0.04);
+        font-size: 1.08rem;
+        padding: 20px 30px 18px 24px;
+        min-width: 260px;
+        max-width: 340px;
+        font-weight: 500;
+        position: relative;
+        transition: box-shadow 0.18s;
+    }
+
+    .tooltip-bubble:hover {
+        box-shadow: 0 8px 36px rgba(109, 40, 217, 0.09), 0 2px 6px rgba(76, 70, 200, 0.07);
+    }
+
+    .tooltip-bubble::after {
+        content: '';
+        position: absolute;
+        left: 39px;
+        bottom: -24px;
+        width: 38px;
+        height: 36px;
+        background: #f5f7ff;
+        border-bottom-left-radius: 25px 30px;
+        border-bottom-right-radius: 30px 38px;
+        transform: rotate(18deg);
+        box-shadow: 0 2px 12px rgba(80, 45, 200, 0.06);
+        border-bottom: 2px solid #c7d2fe;
+    }
+
+    .ai-tip-example {
+        color: #4f46e5;
+        font-weight: 700;
+        font-size: 1.09em;
+        padding-top: 6px;
+        display: block;
+    }
+
+    /* Magic Mic Button */
     #magic-mic-btn {
         position: fixed;
         bottom: 36px;
@@ -649,6 +384,7 @@
         50% { transform: scale(1.05); }
     }
 
+    /* Scrollbar Styling */
     .section-body::-webkit-scrollbar {
         width: 6px;
     }
@@ -663,152 +399,167 @@
         border-radius: 10px;
     }
 
+    .section-body::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+
     @media (max-width: 768px) {
         .col-md-4 {
             margin-bottom: 1.5rem;
         }
+
         .section-body {
             max-height: 350px;
         }
+
         #magic-mic-btn {
             width: 60px;
             height: 60px;
             bottom: 20px;
             right: 20px;
         }
+
+        .ai-mic-tooltip {
+            right: 74px;
+            bottom: 72px;
+        }
+
+        .tooltip-bubble {
+            font-size: 0.95rem;
+            min-width: 220px;
+            padding: 16px 24px 14px 20px;
+        }
     }
 </style>
 
 <div class="container mt-4">
-    <div class="page-header">
-        <h2>
-            <i class="fas fa-comments"></i>
-            Team Collaboration
-        </h2>
-        <p>Connect with your team members and collaborate on tasks</p>
+    {% comment %} <a href="{% url 'dashboard' %}" class="back-btn" style="margin-bottom: 24px;">
+  <i class="fas fa-arrow-left"></i> Back
+</a> {% endcomment %}
+<div class="page-header">
+    <h2>
+        <i class="fas fa-comments"></i>
+        Team Collaboration
+    </h2>
+    <p>Connect with your team members and collaborate on tasks</p>
+</div>
+
+<div class="row">
+    <!-- Team Members Section -->
+    <div class="col-md-4">
+        <div class="section-card people-section">
+            <div class="section-header">
+                <i class="fas fa-users"></i>
+                <h5>Team Members</h5>
+                <span class="badge">{{ users|length }}</span>
+            </div>
+            <div class="section-body">
+                {% for user in users %}
+                <div class="user-item">
+                    <div class="user-info">
+                        <div class="avatar-wrapper">
+                            <div class="user-avatar">
+                                {{ user.username|first|upper }}
+                            </div>
+                            <div class="status-indicator"></div>
+                        </div>
+                        <div>
+                            <div class="user-name">{{ user.username }}</div>
+                            <div class="user-status">Available</div>
+                        </div>
+                    </div>
+                    <form action="{% url 'send_friend_request' user.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button class="btn-custom btn-send">
+                            <i class="fas fa-user-plus"></i>
+                            Connect
+                        </button>
+                    </form>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-users-slash"></i>
+                    <p>No team members available</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 
-    <div class="row">
-        <!-- People Section -->
-        <div class="col-md-4">
-            <div class="section-card people-section">
-                <div class="section-header">
-                    <i class="fas fa-users"></i>
-                    <h5>Team Members</h5>
-                    <span class="badge">{{ users|length }}</span>
-                </div>
-                <div class="section-body">
-                    {% for user in users %}
-                    <div class="user-item">
-                        <div class="user-info">
-                            <div class="avatar-wrapper">
-                                <div class="user-avatar">
-                                    {{ user.username|first|upper }}
-                                </div>
-                                <div class="status-indicator"></div>
-                            </div>
-                            <div>
-                                <div class="user-name">{{ user.username }}</div>
-                                <div class="user-status">Available</div>
+    <!-- Connection Requests Section -->
+    <div class="col-md-4">
+        <div class="section-card requests-section">
+            <div class="section-header">
+                <i class="fas fa-bell"></i>
+                <h5>Connection Requests</h5>
+                <span class="badge">{{ pending_requests|length }}</span>
+            </div>
+            <div class="section-body">
+                {% for req in pending_requests %}
+                <div class="user-item request-item">
+                    <div class="user-info">
+                        <div class="avatar-wrapper">
+                            <div class="user-avatar">
+                                {{ req.from_user.username|first|upper }}
                             </div>
                         </div>
-                        <form action="{% url 'send_friend_request' user.id %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button class="btn-custom btn-send">
-                                <i class="fas fa-user-plus"></i>
-                                Connect
-                            </button>
-                        </form>
+                        <div>
+                            <div class="request-label">New Request</div>
+                            <div class="user-name">{{ req.from_user.username }}</div>
+                        </div>
                     </div>
-                    {% empty %}
-                    <div class="empty-state">
-                        <i class="fas fa-users-slash"></i>
-                        <p>No team members available</p>
-                    </div>
-                    {% endfor %}
+                    <form action="{% url 'accept_friend_request' req.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button class="btn-custom btn-accept">
+                            <i class="fas fa-check"></i>
+                            Accept
+                        </button>
+                    </form>
                 </div>
+                {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>No pending requests</p>
+                </div>
+                {% endfor %}
             </div>
         </div>
+    </div>
 
-        <!-- Requests Section -->
-        <div class="col-md-4">
-            <div class="section-card requests-section">
-                <div class="section-header">
-                    <i class="fas fa-bell"></i>
-                    <h5>Connection Requests</h5>
-                    <span class="badge">
-                        {{ request.user.received_requests.all|length }}
-                    </span>
-                </div>
-                <div class="section-body">
-                    {% for req in request.user.received_requests.all %}
-                    {% if not req.is_accepted %}
-                    <div class="user-item request-item">
-                        <div class="user-info">
-                            <div class="avatar-wrapper">
-                                <div class="user-avatar">
-                                    {{ req.from_user.username|first|upper }}
-                                </div>
-                            </div>
-                            <div>
-                                <div class="request-label">New Request</div>
-                                <div class="user-name">{{ req.from_user.username }}</div>
-                            </div>
-                        </div>
-                        <form action="{% url 'accept_friend_request' req.id %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button class="btn-custom btn-accept">
-                                <i class="fas fa-check"></i>
-                                Accept
-                            </button>
-                        </form>
-                    </div>
-                    {% endif %}
-                    {% empty %}
-                    <div class="empty-state">
-                        <i class="fas fa-inbox"></i>
-                        <p>No pending requests</p>
-                    </div>
-                    {% endfor %}
-                </div>
+    <!-- Your Connections Section -->
+    <div class="col-md-4">
+        <div class="section-card friends-section">
+            <div class="section-header">
+                <i class="fas fa-user-friends"></i>
+                <h5>Your Connections</h5>
+                <span class="badge">{{ friends.count }}</span>
             </div>
-        </div>
-
-        <!-- Friends Section -->
-        <div class="col-md-4">
-            <div class="section-card friends-section">
-                <div class="section-header">
-                    <i class="fas fa-user-friends"></i>
-                    <h5>Your Connections</h5>
-                    <span class="badge">{{ friends.count }}</span>
-                </div>
-                <div class="section-body">
-                    {% for friend in friends %}
-                    <div class="user-item">
-                        <div class="user-info">
-                            <div class="avatar-wrapper">
-                                <div class="user-avatar">
-                                    {{ friend.username|first|upper }}
-                                </div>
-                                <div class="status-indicator"></div>
+            <div class="section-body">
+                {% for friend in friends %}
+                <div class="user-item">
+                    <div class="user-info">
+                        <div class="avatar-wrapper">
+                            <div class="user-avatar">
+                                {{ friend.username|first|upper }}
                             </div>
-                            <div>
-                                <div class="user-name">{{ friend.username }}</div>
-                                <div class="user-status">Connected</div>
-                            </div>
+                            <div class="status-indicator"></div>
                         </div>
-                        <a class="btn-custom btn-chat" href="{% url 'chat_with_user' friend.id %}">
-                            <i class="fas fa-comment-dots"></i>
-                            Chat
-                        </a>
+                        <div>
+                            <div class="user-name">{{ friend.username }}</div>
+                            <div class="user-status">Connected</div>
+                        </div>
                     </div>
-                    {% empty %}
-                    <div class="empty-state">
-                        <i class="fas fa-user-plus"></i>
-                        <p>No connections yet. Start connecting with team members!</p>
-                    </div>
-                    {% endfor %}
+                    <a class="btn-custom btn-chat" href="{% url 'chat_with_user' friend.id %}">
+                        <i class="fas fa-comment-dots"></i>
+                        Chat
+                    </a>
                 </div>
+                {% empty %}
+                <div class="empty-state">
+                    <i class="fas fa-user-plus"></i>
+                    <p>No connections yet. Start connecting!</p>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
@@ -816,6 +567,17 @@
 
 <!-- Magic Mic Button -->
 <button id="magic-mic-btn" title="Click to speak">🎤</button>
+<div id="mic-ai-tooltip" class="ai-mic-tooltip">
+    <div class="tooltip-robot">
+        <img src="{% static 'chat/bot.png' %}" alt="Assistant" />
+    </div>
+    <div class="tooltip-bubble">
+        Try saying<br>
+        <span class="ai-tip-example">
+            Open <b>{friend_name}</b>: {"Hi, how are you?"}
+        </span>
+    </div>
+</div>
 
 <script>
 // Store data from Django template
@@ -836,14 +598,12 @@ window.voiceCommandData = {
 function findFriendByName(spokenText) {
     const lower = spokenText.toLowerCase();
     
-    // Exact match
     for (const friend of window.voiceCommandData.friends) {
         if (lower.includes(friend.username.toLowerCase())) {
             return friend;
         }
     }
     
-    // First letter match
     for (const friend of window.voiceCommandData.friends) {
         if (lower[0] === friend.username[0].toLowerCase()) {
             return friend;
@@ -854,21 +614,20 @@ function findFriendByName(spokenText) {
 }
 
 function extractFriendAndMessage(spokenText) {
-    // Improved: find first known friend name loose match
     let lower = spokenText.toLowerCase();
     for (const friend of window.voiceCommandData.friends) {
         let idx = lower.indexOf(friend.username.toLowerCase());
         if (idx !== -1) {
-            // Message = everything after name, trimmed of extra words
             let msg = spokenText.substring(idx + friend.username.length).trim();
             return { name: friend.username, message: msg };
         }
     }
-    // fallback to old patterns if name not matched
+    
     const patterns = [
         /(?:tell|ask|open|message|chat with|open chat with|say to)\s+([A-Za-z_0-9]+)/i,
         /([A-Za-z_0-9]+)[,:\s]+(.+)/i
     ];
+    
     for (const pattern of patterns) {
         const match = spokenText.match(pattern);
         if (match) {
@@ -882,44 +641,56 @@ function extractFriendAndMessage(spokenText) {
 
 document.addEventListener("DOMContentLoaded", function() {
     const micBtn = document.getElementById('magic-mic-btn');
+    const tooltip = document.getElementById('mic-ai-tooltip');
     
     if (!micBtn) {
         console.error("Magic mic button not found!");
         return;
     }
     
-    // Check if Speech Recognition is supported
+    // Update tooltip with random friend name
+    if (window.voiceCommandData && window.voiceCommandData.friends && window.voiceCommandData.friends.length > 0) {
+        const friends = window.voiceCommandData.friends;
+        const friend = friends[Math.floor(Math.random() * friends.length)];
+        tooltip.querySelector('.ai-tip-example').innerHTML =
+            `Open <b>${friend.username}</b>: { 'Your Msg !' }`;
+    }
+    
+    // Tooltip hover handlers
+    if (micBtn && tooltip) {
+        micBtn.addEventListener('mouseenter', function() { tooltip.style.display = 'block'; });
+        micBtn.addEventListener('mouseleave', function() { tooltip.style.display = 'none'; });
+        micBtn.addEventListener('touchstart', function() { tooltip.style.display = 'block'; });
+        micBtn.addEventListener('touchend', function() { tooltip.style.display = 'none'; });
+    }
+    
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     
     if (!SpeechRecognition) {
         micBtn.style.display = 'none';
-        console.error("Speech Recognition not supported in this browser");
+        console.error("Speech Recognition not supported");
         return;
     }
     
     micBtn.addEventListener('click', function() {
-        console.log("Mic button clicked!");
-        
         const recognition = new SpeechRecognition();
         recognition.lang = "en-US";
         recognition.continuous = false;
         recognition.interimResults = false;
         
         recognition.onstart = function() {
-            console.log("Speech recognition started");
             micBtn.classList.add('listening');
             micBtn.textContent = '🔴';
         };
         
         recognition.onend = function() {
-            console.log("Speech recognition ended");
             micBtn.classList.remove('listening');
             micBtn.textContent = '🎤';
         };
         
         recognition.onerror = function(event) {
             console.error("Speech recognition error:", event.error);
-            alert("Microphone error: " + event.error + "\n\nPlease check:\n1. Microphone permissions\n2. Using HTTPS/localhost\n3. Browser compatibility (Chrome/Edge work best)");
+            alert("Microphone error: " + event.error);
             micBtn.classList.remove('listening');
             micBtn.textContent = '🎤';
         };
@@ -928,7 +699,6 @@ document.addEventListener("DOMContentLoaded", function() {
             const transcript = event.results[0][0].transcript;
             console.log("Heard:", transcript);
             
-            // Parse the command
             const { name, message } = extractFriendAndMessage(transcript);
             const friend = name ? findFriendByName(name) : null;
             
@@ -941,12 +711,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 return;
             }
             
-            console.log("Found friend:", friend.username);
-            
-            // Open chat in new tab
             window.open(friend.chatUrl, "_blank");
             
-            // Send message if provided
             if (message && message.trim().length > 0) {
                 fetch(friend.sendUrl, {
                     method: "POST",
@@ -957,15 +723,12 @@ document.addEventListener("DOMContentLoaded", function() {
                     body: "message=" + encodeURIComponent(message)
                 })
                 .then(response => {
-                    console.log("Message sent successfully");
                     const successMsg = "Messaged " + friend.username + ": " + message;
                     if (window.speechSynthesis) {
                         window.speechSynthesis.speak(new SpeechSynthesisUtterance(successMsg));
                     }
                 })
-                .catch(error => {
-                    console.error("Error sending message:", error);
-                });
+                .catch(error => console.error("Error sending message:", error));
             } else {
                 const openMsg = "Opened " + friend.username + "'s chat";
                 if (window.speechSynthesis) {
@@ -981,8 +744,6 @@ document.addEventListener("DOMContentLoaded", function() {
             alert("Could not start microphone. Please check permissions.");
         }
     });
-    
-    console.log("Voice command system initialized with", window.voiceCommandData.friends.length, "friends");
 });
 </script>
 

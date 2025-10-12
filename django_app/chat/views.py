@@ -35,7 +35,12 @@ def chat_dashboard(request):
         )
     ).distinct()
     users = users.exclude(id__in=friends.values_list('id', flat=True))
-    return render(request, "chat/chat_dashboard.html", {"users": users, "friends": friends})
+    pending_requests = request.user.received_requests.filter(is_accepted=False)
+    return render(request, "chat/chat_dashboard.html", {
+        "users": users,
+        "friends": friends,
+        "pending_requests": pending_requests, 
+    })
 
 
 @login_required

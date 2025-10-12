@@ -2,3 +2,4 @@ Django>=5.2
 psycopg2-binary
 kafka-python
 channels
+dj-database-url

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Access blocked: AI Workflow Assistant has not completed the Google verification process</h2>
+  <p>
+    Our app is currently in testing. If you believe you should have access, please email the developer.<br>
+    You’ll be redirected to the dashboard shortly.
+  </p>
+</div>
+<script>
+  setTimeout(function() {
+    window.location.href = "{% url 'dashboard' %}";
+  }, 500);
+</script>
+{% endblock %}

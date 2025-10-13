@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: django-app
+    repo: https://github.com/ANU-2524/AI-Workflow-Assistant
+    branch: main
+    rootDir: django_app
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        sync: false
+      - key: DEBUG
+        value: "False"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: workflow-db
+          property: connectionString
+
+  - type: web
+    name: fastapi-app
+    repo: https://github.com/ANU-2524/AI-Workflow-Assistant
+    branch: main
+    rootDir: fastapi_service
+    dockerfilePath: Dockerfile
+    envVars:
+      # Add your FastAPI ENV as needed, for example:
+      - key: SOME_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: workflow-db
+          property: connectionString
+
+databases:
+  - name: workflow-db
+    plan: free
+    postgresMajorVersion: "15"
+    region: oregon

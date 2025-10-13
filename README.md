@@ -2,13 +2,6 @@
 
 > **Transform your daily work into effortless productivity!** This intelligent assistant reads your emails, listens to your voice, and helps you manage tasks and collaborate with your team—all from one beautiful dashboard.
 
-![AI Workflow Assistant](https://img.shields.io/badge/Status-Active-brightgreen?style=flat-square)
-![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
-![Python](https://img.shields.io/badge/Backend-Python-3776ab?style=flat-square&logo=python)
-![React](https://img.shields.io/badge/Frontend-React-61dafb?style=flat-square&logo=react)
-
----
-
 ## ✨ What Makes It Special?
 
 Say goodbye to task chaos! Our AI Workflow Assistant brings everything together:
@@ -47,7 +40,6 @@ Say goodbye to task chaos! Our AI Workflow Assistant brings everything together:
 - **Connection Requests** - Send and receive collaboration invites
 - **Direct Chat** - Real-time messaging with connected team members
 - **Online Status** - See who's available at a glance
-- **Instant Notifications** - Get notified when teammates are online
 
 ### 🗣️ Voice Assistant Commands
 
@@ -117,368 +109,100 @@ graph TD
 
 ---
 
-## 🚀 Quick Start
+🚀 Quick Start
 
-### Prerequisites
+Prerequisites
 
-- Python 3.9+
-- Node.js 16+
-- Docker & Docker Compose
-- Google API credentials
-- Gmail API access
+Python 3.9+
 
-### Installation
+Kafka, PostgreSQL
 
-**1. Clone the Repository**
+Docker & Docker Compose
 
-```bash
-git clone https://github.com/your-username/ai-workflow-assistant.git
-cd ai-workflow-assistant
-```
+Google API credentials
 
-**2. Set Up Environment Variables**
+Gmail API access
 
-Create a `.env` file in the root directory:
+Installation
+1. Clone the Repository
 
-```env
-# Google OAuth
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
+bash
+git clone https://github.com/ANU-2524/AI-Workflow-Assistant.git
+cd AI-Workflow-Assistant
 
-# Gmail API
-GMAIL_API_KEY=your_gmail_api_key
+2. Set Up Environment Variables
+Create a .env file (see .env.example for keys like DATABASE_URL, DJANGO_SECRET_KEY, DEBUG).
 
-# Backend
-BACKEND_URL=http://localhost:8000
-BACKEND_PORT=8000
+3. Start with Docker
 
-# Frontend
-FRONTEND_URL=http://localhost:3000
-FRONTEND_PORT=3000
-
-# Database
-DATABASE_URL=postgresql://user:password@localhost:5432/ai_workflow
-
-# JWT Secret
-JWT_SECRET=your_jwt_secret_key
-```
-
-**3. Start with Docker**
-
-```bash
+bash
 docker-compose up --build
-```
-
-This will start:
-- Backend API (Port 8000)
-- Frontend (Port 3000)
-- PostgreSQL Database
-- Redis (for real-time features)
-
-**4. Access the Application**
-
-Open your browser and navigate to:
-
-```
-http://localhost:3000
-```
-
-**5. Login with Google**
-
-Click "Login with Google" and authorize the application to access your:
-- Google Account information
-- Gmail inbox (for task extraction)
-
----
-
-## 📖 Usage Examples
-
-### Example 1: Voice Command
-
-```
-User: "Hey, open Slack"
-Assistant: Opens Slack in your browser
-```
-
-### Example 2: Email Task Extraction
-
-```
-Incoming Email: "Please review the project proposal by Friday"
-Assistant: Auto-creates task "Review project proposal" with due date: Friday
-```
-
-### Example 3: Team Collaboration
-
-```
-Dashboard → Team Collaboration → Connect with Vinita
-→ Chat → Send message: "Hey, how are you?"
-→ Real-time message delivered with online status
-```
-
-### Example 4: Task Management
-
-```
-Add Task:
-- Title: "Complete quarterly report"
-- Description: "Q3 sales and performance metrics"
-- Priority: High
-- Due Date: Oct 20, 2025
-- Status: Pending
-```
-
----
-
-## 🛠️ Tech Stack
-
-### Backend
-- **Framework**: FastAPI / Django
-- **Language**: Python 3.9+
-- **APIs**: Google OAuth 2.0, Gmail API, Google Docs API
-- **Database**: PostgreSQL
-- **Real-time**: WebSocket / Socket.io
-- **Authentication**: JWT
-
-### Frontend
-- **Framework**: React 18+
-- **UI Library**: Tailwind CSS
-- **State Management**: Redux / Context API
-- **Real-time**: Socket.io Client
-- **Voice**: Web Speech API / Annoy.js
-
-### Infrastructure
-- **Containerization**: Docker
-- **Orchestration**: Docker Compose
-- **Cloud Deployment**: Render / Heroku / AWS
-- **CDN**: Cloudflare (optional)
-
----
-
-## 📋 Project Structure
-
-```
-ai-workflow-assistant/
-├── backend/
-│   ├── app/
-│   │   ├── api/
-│   │   │   ├── auth.py
-│   │   │   ├── tasks.py
-│   │   │   ├── teams.py
-│   │   │   └── chat.py
-│   │   ├── models/
-│   │   │   ├── user.py
-│   │   │   ├── task.py
-│   │   │   ├── team.py
-│   │   │   └── message.py
-│   │   ├── services/
-│   │   │   ├── gmail_service.py
-│   │   │   ├── voice_service.py
-│   │   │   └── task_service.py
-│   │   └── main.py
-│   ├── requirements.txt
-│   └── Dockerfile
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── Dashboard.jsx
-│   │   │   ├── VoiceAssistant.jsx
-│   │   │   ├── TaskForm.jsx
-│   │   │   ├── TeamCollaboration.jsx
-│   │   │   └── ChatDashboard.jsx
-│   │   ├── pages/
-│   │   ├── services/
-│   │   └── App.jsx
-│   ├── package.json
-│   └── Dockerfile
-├── docker-compose.yml
-├── .env.example
-└── README.md
-```
-
----
-
-## 🔐 Security Features
-
-- **Google OAuth 2.0** - Secure authentication
-- **JWT Tokens** - Secure session management
-- **HTTPS Only** - Encrypted data transmission
-- **CORS Protection** - Cross-origin request security
-- **Environment Variables** - Sensitive data protection
-- **Rate Limiting** - API abuse prevention
-- **Input Validation** - XSS and injection prevention
-
----
-
-## 🌐 Deployment
-
-### Deploy on Render
-
-1. Push your repository to GitHub
-2. Create a new Render account at https://render.com
-3. Click "New" → "Web Service"
-4. Connect your GitHub repository
-5. Add environment variables
-6. Deploy!
-
-### Deploy on Heroku
-
-```bash
-heroku login
-heroku create your-app-name
-git push heroku main
-heroku config:set GOOGLE_CLIENT_ID=xxx
-heroku config:set GOOGLE_CLIENT_SECRET=xxx
-```
-
-### Deploy on AWS
-
-- Use **EC2** for compute
-- Use **RDS** for PostgreSQL
-- Use **ElastiCache** for Redis
-- Use **S3** for file storage
-- Use **CloudFront** for CDN
-
----
-
-## 📸 Screenshots
-
-### Dashboard
-![Dashboard](https://via.placeholder.com/600x400?text=Dashboard)
-
-### Voice Assistant
-![Voice Assistant](https://via.placeholder.com/600x400?text=Voice+Assistant)
-
-### Team Collaboration
-![Team Collaboration](https://via.placeholder.com/600x400?text=Team+Collaboration)
-
-### Chat Interface
-![Chat Interface](https://via.placeholder.com/600x400?text=Chat+Interface)
-
----
-
-## 🐛 Troubleshooting
-
-### Issue: Gmail not connecting?
-```
-Solution: 
-1. Check if Gmail API is enabled in Google Cloud Console
-2. Verify GMAIL_API_KEY in .env file
-3. Click "Request Access" button on dashboard
-4. Re-authenticate with Google
-```
-
-### Issue: Voice commands not working?
-```
-Solution:
-1. Check browser microphone permissions
-2. Ensure you're using HTTPS (required for Web Speech API)
-3. Try a different browser (Chrome/Edge recommended)
-4. Check console for error messages
-```
+Django : 8000
 
-### Issue: Real-time chat not updating?
-```
-Solution:
-1. Check WebSocket connection in browser DevTools
-2. Verify Redis is running: docker ps
-3. Restart the backend: docker-compose restart
-4. Clear browser cache and refresh
-```
+FastAPI: 9000
 
----
+PostgreSQL & Kafka included!
 
-## 🤝 Contributing
+4. Access the App
+Open your browser:
 
-We love contributions! Here's how to get started:
+text
+http://localhost:8000
 
-1. **Fork the repository**
-2. **Create a feature branch** `git checkout -b feature/amazing-feature`
-3. **Make your changes** and commit them `git commit -m 'Add amazing feature'`
-4. **Push to the branch** `git push origin feature/amazing-feature`
-5. **Open a Pull Request**
+5. Login with Google
 
-### Contribution Guidelines
+Click “Login with Google”
 
-- Follow PEP 8 (Python) and ESLint (JavaScript) standards
-- Write descriptive commit messages
-- Add tests for new features
-- Update documentation as needed
-- Be respectful and constructive
+Authorize access (for smart task extraction from Gmail!)
 
-### Areas We Need Help With
+👀 Usage Examples
+Voice:
+“Hey, open Slack” → Slack opens in your browser
 
-- [ ] Additional voice commands
-- [ ] Mobile app (React Native)
-- [ ] Advanced analytics
-- [ ] Calendar integration
-- [ ] Slack integration
-- [ ] Microsoft Teams support
+Email:
+“Please review the project proposal by Friday” → Task auto-created, due Friday!
 
----
+Teamwork:
+Dashboard → Connect → Chat → Type or speak to message your team, live!
 
-## 📚 Documentation
+Quick Tasks:
+Add tasks with title, priority, due date, status—all tracked in the dashboard
 
-- [API Documentation](./docs/API.md)
-- [Setup Guide](./docs/SETUP.md)
-- [Deployment Guide](./docs/DEPLOYMENT.md)
-- [Contributing Guide](./docs/CONTRIBUTING.md)
-- [Troubleshooting](./docs/TROUBLESHOOTING.md)
+🛠️ Tech Stack
+Backend:
 
----
+FastAPI / Django (Python 3.9+), PostgreSQL
 
-## 📝 License
+Google OAuth, Gmail API 
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
----
+Infra:
 
-## 🙋 Support
+Docker, Docker Compose...
 
-Need help? We're here for you!
+🤝 Contributing
+Fork & feature branch
 
-- **GitHub Issues** - Report bugs or request features
-- **Email** - support@aiworkflow.com
-- **Discord Community** - Join our community server
-- **Twitter** - Follow us for updates @AIWorkflow
+Code & commit
 
----
+Pull request!
 
-## 🎓 Roadmap
+Follow PEP8 & ESLint, write simple commit messages
 
-### Version 1.1 (Q4 2025)
-- [ ] Mobile app (iOS & Android)
-- [ ] Advanced task filtering and search
-- [ ] Task templates and automation
-- [ ] Email scheduling
+Feature ideas needed:
 
-### Version 1.2 (Q1 2026)
-- [ ] Slack integration
-- [ ] Calendar sync
-- [ ] Analytics dashboard
-- [ ] AI-powered task suggestions
+More voice commands
 
-### Version 1.3 (Q2 2026)
-- [ ] Microsoft Teams integration
-- [ ] Advanced automation workflows
-- [ ] Team performance analytics
-- [ ] Custom voice model training
+Mobile app
 
----
+Slack & Teams integration
 
-## ❤️ Built With Love
+Advanced analytics & suggestions
 
-Made with ❤️ by the AI Workflow Assistant team. We believe productivity should be effortless, intelligent, and collaborative.
 
-**Enjoying the project? Give us a ⭐ on GitHub!**
+🙋 Need help?
+GitHub Issues
 
----
+Raise Issue...
 
-## 🎉 Acknowledgments
-
-- Google APIs for authentication and services
-- The React and FastAPI communities
-- All our amazing contributors
-- You for using AI Workflow Assistant!
-
----
-
-**Ready to revolutionize your workflow? [Get Started Now!](#quick-start)** 🚀
+🎉 Made with 💖 by Anu... !!

@@ -597,46 +597,18 @@ window.voiceCommandData = {
 
 function findFriendByName(spokenText) {
     const lower = spokenText.toLowerCase();
-    
     for (const friend of window.voiceCommandData.friends) {
         if (lower.includes(friend.username.toLowerCase())) {
             return friend;
         }
     }
-    
+    // Fallback: try first char match if only short form said
     for (const friend of window.voiceCommandData.friends) {
         if (lower[0] === friend.username[0].toLowerCase()) {
             return friend;
         }
     }
-    
     return null;
-}
-
-function extractFriendAndMessage(spokenText) {
-    let lower = spokenText.toLowerCase();
-    for (const friend of window.voiceCommandData.friends) {
-        let idx = lower.indexOf(friend.username.toLowerCase());
-        if (idx !== -1) {
-            let msg = spokenText.substring(idx + friend.username.length).trim();
-            return { name: friend.username, message: msg };
-        }
-    }
-    
-    const patterns = [
-        /(?:tell|ask|open|message|chat with|open chat with|say to)\s+([A-Za-z_0-9]+)/i,
-        /([A-Za-z_0-9]+)[,:\s]+(.+)/i
-    ];
-    
-    for (const pattern of patterns) {
-        const match = spokenText.match(pattern);
-        if (match) {
-            const name = match[1];
-            const message = match[2] ? match[2].trim() : '';
-            return { name, message };
-        }
-    }
-    return { name: null, message: null };
 }
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -647,31 +619,30 @@ document.addEventListener("DOMContentLoaded", function() {
         console.error("Magic mic button not found!");
         return;
     }
-    
+
     // Update tooltip with random friend name
     if (window.voiceCommandData && window.voiceCommandData.friends && window.voiceCommandData.friends.length > 0) {
         const friends = window.voiceCommandData.friends;
         const friend = friends[Math.floor(Math.random() * friends.length)];
-        tooltip.querySelector('.ai-tip-example').innerHTML =
-            `Open <b>${friend.username}</b>: { 'Your Msg !' }`;
+        tooltip.querySelector('.ai-tip-example').innerHTML = `Open <b>${friend.username}</b>...<br> Chat with <b>${friend.username} : {Your Msg !}</b>`;
     }
-    
-    // Tooltip hover handlers
+
+    // Tooltip handlers
     if (micBtn && tooltip) {
         micBtn.addEventListener('mouseenter', function() { tooltip.style.display = 'block'; });
         micBtn.addEventListener('mouseleave', function() { tooltip.style.display = 'none'; });
         micBtn.addEventListener('touchstart', function() { tooltip.style.display = 'block'; });
         micBtn.addEventListener('touchend', function() { tooltip.style.display = 'none'; });
     }
-    
+
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    
+
     if (!SpeechRecognition) {
         micBtn.style.display = 'none';
         console.error("Speech Recognition not supported");
         return;
     }
-    
+
     micBtn.addEventListener('click', function() {
         const recognition = new SpeechRecognition();
         recognition.lang = "en-US";
@@ -682,26 +653,55 @@ document.addEventListener("DOMContentLoaded", function() {
             micBtn.classList.add('listening');
             micBtn.textContent = '🔴';
         };
-        
         recognition.onend = function() {
             micBtn.classList.remove('listening');
             micBtn.textContent = '🎤';
         };
-        
         recognition.onerror = function(event) {
             console.error("Speech recognition error:", event.error);
             alert("Microphone error: " + event.error);
             micBtn.classList.remove('listening');
             micBtn.textContent = '🎤';
         };
-        
+
         recognition.onresult = function(event) {
-            const transcript = event.results[0][0].transcript;
+            const transcript = event.results[0][0].transcript.trim();
             console.log("Heard:", transcript);
-            
-            const { name, message } = extractFriendAndMessage(transcript);
+
+            // Pattern match: "open/message/chat [name] [message]" or "[name] [message]"
+            let lower = transcript.toLowerCase();
+            let patterns = [
+                /^(open|message|chat with|chat)\s+([a-zA-Z0-9_]+)[,:\s]*(.*)$/i,
+                /^([a-zA-Z0-9_]+)[,:\s]+(.+)$/i
+            ];
+            let match = null, name = null, message = null;
+
+            for (let p of patterns) {
+                match = lower.match(p);
+                if (match) break;
+            }
+            if (match) {
+                // If "open X hi" or "message X text" etc.
+                if (match[2] && match[3] !== undefined) {
+                    name = match[2];
+                    message = match[3].trim();
+                } else if (match[1] && match[2]) {
+                    name = match[1];
+                    message = match[2].trim();
+                }
+            } else {
+                // fallback: extract name by occurrence
+                for (const friend of window.voiceCommandData.friends) {
+                    if (lower.includes(friend.username.toLowerCase())) {
+                        name = friend.username;
+                        let idx = lower.indexOf(friend.username.toLowerCase());
+                        message = transcript.substring(idx + friend.username.length).trim();
+                        break;
+                    }
+                }
+            }
             const friend = name ? findFriendByName(name) : null;
-            
+
             if (!friend) {
                 const errorMsg = "Sorry, " + (name || "that friend") + " is not in your connections";
                 alert(errorMsg);
@@ -710,10 +710,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
                 return;
             }
-            
-            window.open(friend.chatUrl, "_blank");
-            
-            if (message && message.trim().length > 0) {
+
+            // If there's a message, send it first, then open chat.
+            if (message && message.length > 0) {
                 fetch(friend.sendUrl, {
                     method: "POST",
                     headers: {
@@ -723,20 +722,24 @@ document.addEventListener("DOMContentLoaded", function() {
                     body: "message=" + encodeURIComponent(message)
                 })
                 .then(response => {
-                    const successMsg = "Messaged " + friend.username + ": " + message;
+                    const successMsg = `Messaged ${friend.username}: ${message}`;
                     if (window.speechSynthesis) {
                         window.speechSynthesis.speak(new SpeechSynthesisUtterance(successMsg));
                     }
+                    // Open chat after sending
+                    window.open(friend.chatUrl, "_blank");
                 })
                 .catch(error => console.error("Error sending message:", error));
             } else {
-                const openMsg = "Opened " + friend.username + "'s chat";
+                // Just open the chat window
+                window.open(friend.chatUrl, "_blank");
+                const openMsg = `Opened ${friend.username}'s chat`;
                 if (window.speechSynthesis) {
                     window.speechSynthesis.speak(new SpeechSynthesisUtterance(openMsg));
                 }
             }
         };
-        
+
         try {
             recognition.start();
         } catch (error) {
@@ -746,6 +749,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 </script>
+
 
 {% endblock %}
 </body>

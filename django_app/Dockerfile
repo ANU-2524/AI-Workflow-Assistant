@@ -14,7 +14,7 @@ RUN pip install -r requirements.txt
 COPY . .
 
 # Collect static files (optional, will ignore errors if STATIC_ROOT is unset)
-RUN python manage.py collectstatic --noinput || true
+# RUN python manage.py collectstatic --noinput || true
 
 # Expose the correct port to the cloud
 EXPOSE 8000

@@ -8,3 +8,9 @@ google-auth
 google-auth-httplib2
 google-api-python-client
 spacy
+python-dotenv
+python-jose[cryptography]
+pydantic-settings
+slowapi
+requests
+pydantic[email]

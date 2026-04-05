@@ -3,3 +3,6 @@ psycopg2-binary
 kafka-python
 channels
 dj-database-url
+python-dotenv
+Pillow
+channels[daphne]

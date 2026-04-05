@@ -3,7 +3,6 @@ from .models import FriendRequest, ChatMessage
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
 @login_required
@@ -44,15 +43,18 @@ def chat_dashboard(request):
 
 
 @login_required
-@csrf_exempt
 def clear_chat(request, user_id):
+    """Clear chat messages for the current user."""
     if request.method == "POST":
-        friend = User.objects.get(id=user_id)
-        messages = ChatMessage.objects.filter(
-            sender__in=[request.user, friend], receiver__in=[request.user, friend]
-        )
-        for msg in messages:
-            msg.deleted_for.add(request.user)
+        try:
+            friend = User.objects.get(id=user_id)
+            messages = ChatMessage.objects.filter(
+                sender__in=[request.user, friend], receiver__in=[request.user, friend]
+            )
+            for msg in messages:
+                msg.deleted_for.add(request.user)
+        except User.DoesNotExist:
+            pass
     return redirect("chat_with_user", user_id=user_id)
 
 @login_required

@@ -3,9 +3,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.utils import timezone
+from django.db import transaction
+import logging
 from .models import Task
 from .forms import TaskForm
 from .kafka_utils import send_task_to_kafka
+
+logger = logging.getLogger(__name__)
 
 
 @login_required
@@ -36,15 +40,20 @@ def dashboard(request):
 
 @login_required
 def add_task(request):
-    """Add new task"""
+    """Add new task with Kafka event."""
     if request.method == 'POST':
         form = TaskForm(request.POST)
         if form.is_valid():
-            task = form.save(commit=False)
-            task.user = request.user
-            task.save()
-            print("Sending to Kafka -->")
-            send_task_to_kafka({
+            try:
+                task = form.save(commit=False)
+                task.user = request.user
+                task.save()
+                logger.info(f"Task created: {task.id} by {request.user.username}")
+                
+                # Send to Kafka asynchronously
+                try:
+                    send_task_to_kafka({
+                        "task_id": task.id,
                         "title": task.title,
                         "description": task.description,
                         "due_date": task.due_date.isoformat(),
@@ -54,8 +63,14 @@ def add_task(request):
                         "user": task.user.username,
                         "created_at": task.created_at.isoformat(),
                     })
+                except Exception as e:
+                    logger.error(f"Error sending task to Kafka: {str(e)}")
+                    # Don't fail the response, task is still created in DB
 
-            return redirect('dashboard')
+                return redirect('dashboard')
+            except Exception as e:
+                logger.error(f"Error creating task: {str(e)}")
+                form.add_error(None, "Error creating task. Please try again.")
     else:
         form = TaskForm()
     
@@ -63,36 +78,53 @@ def add_task(request):
 
 @login_required
 def edit_task(request, task_id):
-    task = get_object_or_404(Task, pk=task_id, user=request.user)
-    if request.method == 'POST':
-        form = TaskForm(request.POST, instance=task)
-        if form.is_valid():
-            form.save()
-            return redirect('dashboard')
-    else:
-        form = TaskForm(instance=task)
-    return render(request, 'tasks/edit_task.html', {'form': form})
+    """Edit an existing task."""
+    try:
+        task = get_object_or_404(Task, pk=task_id, user=request.user)
+        if request.method == 'POST':
+            form = TaskForm(request.POST, instance=task)
+            if form.is_valid():
+                form.save()
+                logger.info(f"Task {task_id} updated by {request.user.username}")
+                return redirect('dashboard')
+        else:
+            form = TaskForm(instance=task)
+        return render(request, 'tasks/edit_task.html', {'form': form, 'task': task})
+    except Exception as e:
+        logger.error(f"Error editing task {task_id}: {str(e)}")
+        return redirect('dashboard')
 
 @login_required
 def delete_task(request, task_id):
-    task = get_object_or_404(Task, pk=task_id, user=request.user)
-    if request.method == 'POST':
-        task.delete()
+    """Delete a task."""
+    try:
+        task = get_object_or_404(Task, pk=task_id, user=request.user)
+        if request.method == 'POST':
+            logger.info(f"Task {task_id} deleted by {request.user.username}")
+            task.delete()
+            return redirect('dashboard')
+        return render(request, 'tasks/confirm_delete.html', {'task': task})
+    except Exception as e:
+        logger.error(f"Error deleting task {task_id}: {str(e)}")
         return redirect('dashboard')
-    return render(request, 'tasks/confirm_delete.html', {'task': task})
 
 
 def signup_view(request):
-    """User registration"""
+    """User registration."""
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=password)
-            login(request, user)
-            return redirect('dashboard')
+            try:
+                user = form.save()
+                username = form.cleaned_data.get('username')
+                password = form.cleaned_data.get('password1')
+                user = authenticate(username=username, password=password)
+                login(request, user)
+                logger.info(f"New user registered: {username}") 
+                return redirect('dashboard')
+            except Exception as e:
+                logger.error(f"Error during signup: {str(e)}")
+                form.add_error(None, "Error creating account. Please try again.")
     else:
         form = UserCreationForm()
     

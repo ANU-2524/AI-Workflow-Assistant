@@ -3,19 +3,20 @@ from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 Base = declarative_base()
 
-class Task():
+class Task(Base):
+    """Task model - reflects Django tasks_task table."""
     __tablename__ = "tasks_task"
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(200), nullable=False)
+    title = Column(String(200), nullable=False, index=True)
     description = Column(String, nullable=True)
-    due_date = Column(DateTime)
-    created_at = Column(DateTime)
+    due_date = Column(DateTime, index=True)
+    created_at = Column(DateTime, index=True)
     updated_at = Column(DateTime)
-    user_id = Column(Integer, ForeignKey('auth_user.id'))
-    priority = Column(String(10))
-    status = Column(String(15))
-    is_completed = Column(Boolean, default=False)
+    user_id = Column(Integer, ForeignKey('auth_user.id'), index=True)
+    priority = Column(String(10), index=True)
+    status = Column(String(15), index=True)
+    is_completed = Column(Boolean, default=False, index=True)
     suggested = Column(Boolean, default=False) 
 
 class EmailAuth(Base) :

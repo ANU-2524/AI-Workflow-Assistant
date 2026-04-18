@@ -1,4 +1,4 @@
-# AI Workflow Assistant
+# AI Workflow Assistant...
 
 > **Transform your daily work into effortless productivity!** This intelligent assistant reads your emails, listens to your voice, and helps you manage tasks and collaborate with your team—all from one beautiful dashboard.
 >
